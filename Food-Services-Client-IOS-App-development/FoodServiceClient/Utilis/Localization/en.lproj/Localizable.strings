@@ -1,0 +1,422 @@
+/* 
+   Default.strings
+  FoodServiceProvider
+
+  Created by Index on 12/18/17.
+  Copyright © 2017 index-pc. All rights reserved.
+*/
+
+//genral mesage
+"ServrError"="server error connection";
+//loader
+"Please wait..." = "Please wait...";
+
+// general message
+"internetProblemTitle"= "Internet Problem";
+"internetProblemBody" = "No internet connection";
+"Error"="Error";
+"error"="Error";
+"isRequired" = "is required *";
+"validationEmail"="please enter a valid email";
+"emailOrPhoneError" = "please enter a valid email";
+"PhoneError" = "enter a valid phone";
+"ServrError"="Server Error";
+"Authentication Error" = "Authentication Error";
+"Maximum number of photos is nine" = "Maximum number of photos is nine";
+"Something went wrong"= "Something went wrong";
+
+//login strings
+"Login" = "Login";
+"Email" = "Email";
+"Password" = "Password";
+"Save password" = "save password";
+"Forget password?" = "Forget password?";
+"Have no account!" = "Have no account!";
+"Register" = "Register";
+"Invalid mail or password" = "Invalid mail or password";
+
+// Register strigs
+"Choose registration type" = "Choose Registration Type";
+"PARTY_COOKER" = "Party Cooks";
+"HOME_COOKER" = "House Cook";
+"FOOD_CAR" = "Food Cars";
+"DELIVERY_PLACE" = "Delivery Place";
+"DELIVERY_GUY" = "Driver Partner";
+"Normal user" = "Normal user";
+
+"About" = "About";
+"User Name" = "User Name";
+"Phone" = "Phone";
+"Address" = "Address";
+"Confirm Password" = "Confirm Password";
+"Regiteration type" = "Regiteration type";
+"firstSelectLocation"="Please Select Location or enable location service";
+"editProductsuccess"="Edit Product successfully";
+"PasswordAndConfirmPassword"="Password and Confirm Password isn`t equal";
+"oldPasswordWrong"="old password is wrong";
+
+
+// change password strings
+"Change phone number" = "Change phone number";
+"New phone number" = "New phone number";
+"Phone number" = "Phone number";
+"Send" = "Send";
+"Activation code" = "Activation Code";
+"Confirm activation code" = "Confirm Activation Code";
+"Wrong?" = "Wrong?";
+"Enter Phone Number" = "Enter Phone Number";
+"Cancel" = "Cancel";
+"Save" = "Save";
+"changePassword" = "Change Password";
+"User not found" = "User not found";
+"Enter valid code" = "Enter valid code";
+
+//continue register strings
+"Continue register" = "Continue Register";
+"Workplace image" = "Workplace image";
+"Analysis Healthy" = "Analysis Healthy";
+"Coker Identity" = "Cooker Identity";
+"press long to determine workplace site" = "Press long to determine workplace site";
+"CreditCardInformation" = "Credit card information";
+"Name as written on card" = "Name as written on card";
+"Postal code" = "Postal code";
+"Select photo from gallery" = "Select photo from gallery";
+"Take Photo" = "Take Photo";
+"add delivery place service" = "Add delivery place service";
+
+"House Cooks Photos" = "House cooks place photos";
+"party cooks Photos" = "Party cooks place photo";
+"Food_Cars_Photos" = "Cars photo";
+"Place_of_delivery" = "Photos for place of delivery";
+"The_identity_of_Owner" = "The identity of owner ";
+"Driver Identity" = "Driver Identity";
+"Analysis Healthy" = "User health analysis";
+"Driving License" = "Photos for driving license";
+"employe identity" = "Employee identity";
+"healthy employees" = "Employee health analysis";
+"place_lisence" = "workplace license";
+"commercial_register" = "Commerical register if exist";
+"License_of_the_car" = "Car license";
+"mounth" = "Mounth";
+"Year" = "Year";
+"Credit card number" = "Credit card number";
+"validate date" = "validate date";
+"Country" = "Country";
+"Add" = "Add";
+"Service Name" = "Service Name";
+"This mail or phone already found" = "This mail or phone already found";
+"you must uploade" = "you must uploade";
+
+//home strings
+"Profile" = "Profile";
+"Products" = "Products";
+"No Products Available" = "No Products Available";
+"No Category Available" = "No Category Available";
+
+//swift messages
+"NoInternet" = "No internet connection";
+"successTitle" = "Success";
+"FailedTitle" = "Error";
+
+//sideMenu
+"Home" = "Home";
+"Profile" = "Profile";
+"Settings" = "Settings";
+"My Orders" = "My Orders";
+"Contact Us" = "Contact Us";
+"Logout" = "Logout";
+
+//logout
+"logout?" = "Are you sure you want to logout?";
+"YES" = "YES";
+"NO" = "NO";
+
+//chat
+"Chat list" = "Chat list";
+"Mangment"= "Mangment";
+"Type a message" = "Type a message";
+
+// profile
+"profileContactUs"="contact us";
+"profileDelivery"="detect delivery method";
+"profileWorkingLocation" = "Work Location";
+"profileworkplace"="work place";
+"profileworkhome"="delivery locations";
+
+// profile
+"profileUserName"= "user Name";
+"profilePassword"= "password";
+"profileCreditCard"= "credit Card";
+"profilePlaceLocation"= "place Location";
+"profilePassword"= "password";
+
+"profilEditSuccessfully"= "Edit profile Successfully";
+"profilEditValidation"= "please complete data";
+
+"profileSelectLocationsTitle"= "detect delivery locations";
+"profileDirectDeliveyLocationsTitle"= "direct delivery from working location";
+"profileDeliveyLocationsTitle"= "delivery location";
+"profileDeliveyLocationsButton"= "Ensure delivery location";
+
+"profileMobile"= "Mobile";
+"profileAddress"= "Address";
+"confirmButton"= "Confirm";
+
+//category
+"Category name can't be empty" = "Category name can't be empty";
+"Category name already exist" = "Category name already exist";
+"Category Name" = "Category Name";
+"Add Category" = "Add Category";
+//product
+"Add product" = "Add Product";
+"Edit product" = "Edit Product";
+"Minimum payment for product booking" = "Minimum payment for product booking";
+"Minimum orders number" = "Minimum orders number";
+"Maximum orders number" = "Maximum orders number";
+"Maximum products prepared daily" = "Maximum products prepared daily";
+"Booking Date" = "Booking Date";
+"Time" = "Time";
+"Prepare Time" = "Prepare Time";
+"Product Components" = "Product Components";
+"Select Category" = "Select Category";
+"Price" = "Price";
+"Product Name" = "Product Name";
+"DAY" = "Day";
+"HOUR" = "Hours";
+"MIN" = "Minutes";
+"Preperation time" = "Preperation time";
+"Components" = "Components";
+"product photo can't be empty" = "product photo can't be empty";
+"Product preparation method" = "Product preparation method";
+//home deliver place
+"client:" = "Client:";
+"cooker:" = "Cooker:";
+"Order number" = "Order number";
+"totalPrice" = "Total price";
+"Sr" = "Sr";
+"client" = "Client";
+"cooker" = "Cooker";
+"yes"="Yes";
+"No"="No";
+"deleteItem"="Are You want to delete this item";
+"deleteItemTitle"="delete Item";
+"deleteItemSuccess"="Item deleted successfully";
+
+//Orders
+"Order State" = "Order State";
+"PENDING" = "Pending";
+"ACCEPTED" = "Accepted";
+"FINISHED" = "Finished";
+"DELIVERED" = "Delivered";
+"REFUSED" = "Refused";
+"ARRIVED"= "ARRIVED";
+"TAKEN" = "TAKEN";
+"type" = "Type";
+"All Order" = "All Order";
+"quantity" = "quantity";
+"Finish Cooking" = "Finish Cooking";
+"OrderDeliverd" = "Order Deliverd";
+"Cooking Finished" = "Cooking Finished";
+"Accept" = "Accept";
+"Refused" = "Refused";
+"Order Refused" = "Order Refused";
+
+//ContactUs
+"CallUs" = "Call Us";
+"CallNow" = "Call Now";
+"Do you have any question, note or a complaint? Our team is ready to help as soon as possible" = "Do you have any question, note or a complaint? Our team is ready to help as soon as possible";
+"Name" = "Name";
+"Message" = "Message";
+"Language" = "Language";
+"Notification" = "Notification";
+"Chat Activity" = "Chat Activity";
+"Payment Methods" = "Payment Methods";
+"ProfileSetting" = "Profile Setting";
+"GeneralSetting" = "General Setting";
+"About" = "About";
+
+//setting
+"English" = "English";
+"Arabic" = "عربي";
+"ar-EG" = "عربي";
+"en" = "English";
+"Language" = "Language";
+"ResetButton"="Reset password";
+"ResetPasswordField"="New Password";
+"ResetConfirmPasswordField"="Confirm New Password";
+
+
+//
+
+"HomeCooker" = "Home Cooker";
+"delivery Guy" = "Delivery Guy";
+"individual count" = "Individual Count";
+"delivery date" = "Delivery Date";
+"notFound"= "Not Found";
+
+
+/////
+
+"Accept"  =  "Accept" ;
+"Refuse"  =  "Refuse" ;
+"" = "";
+"Map"  =  "Map";
+"Producte" = "Producte";
+"Allprice"  =  "Allprice" ;
+"Order Number"  =  "Order Number" ;
+"Client Name"  =  "Client Name" ;
+"Duration"  =  "Duration" ;
+"Name"  =  "Name" ;
+"Quantity"  =  "Quantity" ;
+"Price"  =  "Price" ;
+"Producte"  =  "Producte";
+"Map"  =  "Map";
+
+
+"All Producte" = "All Product";
+"Party Cooker" = "Party Cooker";
+"Home Cooker" = "Home Cooker" ;
+"Food Car" = "Food Car";
+"All Productel" = "All Producte";
+"Party Cookerl" = "Party Cooker";
+"Home Cookerl" = "Home Cooker" ;
+"Food Carl" = "Food Car";
+
+"Gradients" = "Gradients";
+"Preparation Duration" = "Preparation Duration";
+"Reservation Time" = "Reservation Time";
+"Minimum order Request" = "Minimum order Request";
+"Maxmum order Request" = "Maxmum order Request";
+"Minimum Reservation" = "Minimum Reservation";
+"" = "";
+"Cooker Name" = "Cooker Name";
+"more" = "more";
+"Add to Card" = "Add to Card";
+"Product quantity" = "Product quantity";
+"TotalPrice" = "TotalPrice";
+"The day on which the application is to be delivered" = "Delivery Way";
+"No Orders In Card" = "No Orders In Card";
+"Select the delivery method" = "Select the delivery Way";
+"Personal delivery" = " Personal delivery ";
+"Delivery guy" = " Delivery guy ";
+"Order Confirmation" = "Order Confirmation";
+"Location Of Workplace" = "Location Of Workplace";
+"Connect" = "Connect";
+"No Item In Card" = "No Item In Card";
+"Profile" = "Profile";
+"Determinde Delivary Day" = "Determinde Delivary Day And Time";
+"Riyal" = "SAR";
+"Pleas Choose Date" = "Pleas Choose Date";
+
+
+
+"All Product" = "All Product";
+"Home Cooker" = "Home Cooker";
+"Order Has Send" = "Order Has Send";
+"Next" = "Next";
+"Number of individuals" = "Number of individuals";
+"Determinde Delivary Day" = "Determinde Delivary Day";
+"Cost per person" = "Cost per person";
+"TotalPrice" = "TotalPrice";
+"Long Press To Determine Location" = "Long Press To Determine Location";
+"People Number" = "People Number";
+"Delivery Day" = "Delivery Day";
+"Cooker Name" = "Cooker Name";
+"Compelete Order" = "Compelete Order";
+"Order Has Send" = "Order Has Send";
+
+"Order Has Send" = "Order Has Send";
+"Next" = "Next";
+"Lable" = "No Value";
+"Ensure Request" = "Ensure Request" ;
+"Choose location" = "Choose This Location" ;
+
+
+
+"Lable" = "No Value";
+"Next" = " Next";
+"Ensure Request" = "Ensure Request" ;
+"Price For One Persone" = "Price For One Persone" ;
+//cart dialog
+
+"Choose Answer" = "Choose Answer" ;
+"You Want To Delete Old Card And Create New Card" = "You Want To Delete Old Card And Create New Card" ;
+"OK" = "OK";
+"Cancel" = "Cancel" ;
+"Choose location" = "Choose location" ;
+"You Want To Delete This Order" = "You Want To Delete This Order" ;
+"Direct delivery from the workplace" = "Direct delivery from the workplace" ;
+"Number of individuals" = "Number of individuals" ;
+"Long Press To Determine Location" = "Long Press To Determine Location" ;
+"Cost per person" = "Cost per person" ;
+"People Number" = "People Number" ;
+
+"Delivery Day" = "Delivery Day" ;
+"Compelete Order" = "Compelete Order" ;
+"Order Add To Card" = "Order Add To Card" ;
+"Cart" = "Cart" ;
+"Back" = "Back" ;
+
+
+
+
+
+
+
+
+"Done" = "Done" ;
+"New Password" = "New Password" ;
+"Old Password" = "Old Password" ;
+"Edite Profile" = "Edite Profile" ;
+"Ensure" = "Ensure" ;
+"Confirm Password" = "Confirm Password" ;
+"Old Password" = "Current Password" ;
+"New Password" = "New Password" ;
+"Determinde Delivary Time" = "Determinde Delivary Time";
+"Select Time" = "Select Time" ;
+"Select Date" = "Select Date" ;
+"You Want To Logout" = "You Want To Logout" ;
+"Order Rate" = "Order Rate" ;
+"Delivery Rate" = "Delivery Rate" ;
+"Choose Order Rate" = "Choose Order Rate" ;
+"Choose Delivery Rate" = "Choose Delivery Rate" ;
+"Delivered" = "Delivered" ;
+"Order Delivered" = "Order Delivered" ;
+"Order Detailes" = "Order Detailes" ;
+"Long Press To Determine Location" = "Long Press To Determine Location" ;
+"Distance" = "Distance" ;
+"Delivery Cost" = "Delivery Cost" ;
+"Confirn Order" = "Confirn Order" ;
+"Resturante" = "Resturante" ;
+"Ingredients" = "Ingredients" ;
+"Choose Delivery Place" = "Choose Delivery Place" ;
+"Please choose new delivery place from the map" = "Please choose new delivery place from the map" ;
+"Address" = "Address" ;
+"Done" = "Done" ;
+"Total Charge" = "Total Charge" ;
+"Next" = "Next" ;
+"Maxmum order Request" = "Maxmum order Request" ;
+"Minimum order Request" = "Minimum order Request" ;
+"producte name" = "producte name" ;
+"Price" = "Price" ;
+"Quantity" = "Quantity" ;
+"Party Cooker" = "Party Cooker" ;
+"Home Cooker" = "Home Cooker" ;
+"  Food Car " = "  Food Car " ;
+"Resturante" = "Resturante" ;
+"" = "" ;
+"" = "" ;
+"" = "" ;
+"" = "" ;
+"" = "" ;
+"" = "" ;
+"" = "" ;
+"" = "" ;
+"" = "" ;
+
+
+
+
+
+
+

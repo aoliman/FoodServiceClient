@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HeaderThreeLabel" customModule="FoodServiceClient" customModuleProvider="target"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="HeaderThreeLabel" customModule="FoodServiceClient" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="103"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="g4y-lm-FsL">
+                    <rect key="frame" x="8" y="0.0" width="359" height="103"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="MXI-TQ-vKb">
+                            <rect key="frame" x="16" y="4" width="327" height="95"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ux7-Kv-Ahm">
+                                    <rect key="frame" x="0.0" y="0.0" width="109" height="95"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="localizeKey" value="Name"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <variation key="heightClass=regular-widthClass=regular">
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
+                                    </variation>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Quantity" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rLX-zd-GyT">
+                                    <rect key="frame" x="109" y="0.0" width="109" height="95"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="localizeKey" value="Quantity"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <variation key="heightClass=regular-widthClass=regular">
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
+                                    </variation>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Price" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JLN-5d-Gqh">
+                                    <rect key="frame" x="218" y="0.0" width="109" height="95"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="localizeKey" value="Price"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <variation key="heightClass=regular-widthClass=regular">
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
+                                    </variation>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" red="0.90808737277984619" green="0.9724419116973877" blue="0.98430466651916504" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        </stackView>
+                    </subviews>
+                    <color key="backgroundColor" red="0.90808737279999996" green="0.97244191170000005" blue="0.98430466650000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <constraints>
+                        <constraint firstItem="MXI-TQ-vKb" firstAttribute="centerX" secondItem="g4y-lm-FsL" secondAttribute="centerX" id="Mgp-qv-GVa"/>
+                        <constraint firstItem="MXI-TQ-vKb" firstAttribute="centerY" secondItem="g4y-lm-FsL" secondAttribute="centerY" id="XMR-dl-cQr"/>
+                        <constraint firstItem="MXI-TQ-vKb" firstAttribute="leading" secondItem="g4y-lm-FsL" secondAttribute="leading" constant="16" id="Zf8-t8-XQt"/>
+                        <constraint firstItem="MXI-TQ-vKb" firstAttribute="top" secondItem="g4y-lm-FsL" secondAttribute="top" constant="4" id="fKi-vi-dE8"/>
+                        <constraint firstAttribute="bottom" secondItem="MXI-TQ-vKb" secondAttribute="bottom" constant="4" id="nyb-rr-wKc"/>
+                        <constraint firstAttribute="trailing" secondItem="MXI-TQ-vKb" secondAttribute="trailing" constant="16" id="qSv-JH-n0g"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="g4y-lm-FsL" secondAttribute="bottom" id="Q6O-HE-Neu"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="g4y-lm-FsL" secondAttribute="trailing" constant="8" id="R0K-4V-iGU"/>
+                <constraint firstItem="g4y-lm-FsL" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="ca2-Gj-I6R"/>
+                <constraint firstItem="g4y-lm-FsL" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="duc-F6-mCl"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="name" destination="ux7-Kv-Ahm" id="uIu-nm-8Ux"/>
+                <outlet property="price" destination="JLN-5d-Gqh" id="Y2F-JO-szE"/>
+                <outlet property="quantity" destination="rLX-zd-GyT" id="oGb-rO-JRJ"/>
+            </connections>
+            <point key="canvasLocation" x="-142.5" y="-119.5"/>
+        </view>
+    </objects>
+</document>
