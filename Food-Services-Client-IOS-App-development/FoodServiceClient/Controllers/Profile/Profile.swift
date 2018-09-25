@@ -17,12 +17,13 @@ var Getallproducterepo = GetallProdacteRepo()
     var profiletype:String!
     var ProfileInfomation:Owner!
     var Haveplivery = false
-    var members : [Int] = [Singeleton.userInfo!.id!]
+    var members : [Int] = []
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         CancelAllrequsst()
       myLoader.hideCustomLoader()
+        Loader.hideLoader()
    profiletid = UserDefaults.standard.integer(forKey: Profileid)
    profiletype = UserDefaults.standard.string(forKey: Profiletype)
         print(profiletype)
@@ -33,6 +34,11 @@ var Getallproducterepo = GetallProdacteRepo()
         if(UserDefaults.standard.string(forKey: Profiletype) == "food-cars"){
             UserDefaults.standard.set(1, forKey: Type )
         }
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
     }
 
 }
@@ -119,6 +125,7 @@ extension Profile : UITableViewDelegate , UITableViewDataSource {
                     self.ProfileInfomation=data
                     self.havedeliveryplace()
                     self.Tableviewprofile.reloadData()
+                    
                     myLoader.hideCustomLoader()
                 }
                
@@ -129,21 +136,83 @@ extension Profile : UITableViewDelegate , UITableViewDataSource {
     
     
     @objc func MakeCall(){
+        /////////
+        myLoader.showCustomLoaderview(uiview:self.view )
+        members.removeAll()
+        let userId = (Singeleton.userInfo?.id)!
+        members = [userId , (ProfileInfomation.id)!]
+        
+        let conversationId = setConverstionFireBaseId()
+        
+        let member1Ref = userRef.child("\(userId)").child("conversations").child("\(ProfileInfomation.id!)")
+        member1Ref.updateChildValues(["conversationId": conversationId])
+        
+        let member2Ref = userRef.child("\((ProfileInfomation.id)!)").child("conversations").child("\(userId)")
+        member2Ref.updateChildValues(["conversationId": conversationId])
+
+
+        let convRef = conversationsRef.child("\(conversationId)")
+
+        let conversation = ["conversationId" : "\(setConverstionFireBaseId())",
+        "members": members]  as!   [String : Any]
+
+        convRef.updateChildValues(conversation, withCompletionBlock: { (error, convRef) in
+
+        if error != nil {
+        DataUtlis.data.ErrorDialog(Title: "Error".localized(), Body: "")
+        } else {
+        myLoader.hideCustomLoader()
+        myLoader.hideCustomLoader()
         let chatViewContoller = ChatViewController()
-        print(self.ProfileInfomation)
-        
-        var reciver = User(json: ProfileInfomation.toJSON()!)
-        print(reciver)
+        var reciver = User(json: self.ProfileInfomation.toJSON()!)
         chatViewContoller.receiver =  reciver
-        chatViewContoller.conversationId = setConverstionFireBaseId()
-       // self.navigationController?.navigationBar.topItem?.backButton.setTitle("".localized(), for: .normal)
+            chatViewContoller.conversationId = conversationId
+        print(self.ProfileInfomation)
+        self.title = ""
+        self.navigationDrawerController?.title = "".localized()
+           self.navigationController?.pushViewController(chatViewContoller, animated: true)
+        }
+        })
+
+
         
-        self.navigationController?.pushViewController(chatViewContoller, animated: true)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        /////////
+      
+        
+//        var reciver = User(json: ProfileInfomation.toJSON()!)
+//        print(reciver)
+//        chatViewContoller.receiver =  reciver
+//        chatViewContoller.conversationId = setConverstionFireBaseId()
+//
+//        let member1Ref = userRef.child("\(pro)").child("conversations").child("\(self.id!)")
+//        member1Ref.updateChildValues(["conversationId": conversationId])
+//
+//        let member2Ref = userRef.child(“\(self.id!)“).child(“conversations”).child(“\(userId)“)
+//        member2Ref.updateChildValues([“conversationId”: conversationId])
+//
+////        self.navigationController?.navigationBar.topItem?.backButton.setTitle("".localized(), for: .normal)
+//
+////        chatViewContoller.navigationController?.navigationBar.topItem?.backButton.setTitle("".localized(), for: .normal)
+        
+     
     }
     
     func setConverstionFireBaseId() -> String {
-       return members[0] < members[1] ? "\(members[0]) \(members[1])" : "\(members[1]) \(members[0])"
-        
+        return members[0] < members[1] ? "\(members[0])_\(members[1])" : "\(members[1])_\(members[0])"
     }
     
     

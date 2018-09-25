@@ -14,7 +14,7 @@ import RxSwift
 import Moya
 class LoginVc: UIViewController
 {
-    
+    var registerRepo = GetallProdacteRepo()
     var didSetupConstraints = false
     
     var Getallproducterepo = GetallProdacteRepo()
@@ -22,17 +22,7 @@ class LoginVc: UIViewController
     private let disposeBag = DisposeBag()
     
     var isLogged = false
-    var validationErrorLabel: UILabel = {
-        let label = UILabel()
-        label.isHidden = true
-        label.textColor = .red
-        label.font = UIFont.fontAwesome(ofSize: 20)
-        label.text = String.fontAwesomeIcon(code: "fa-exclamation-circle")
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        return label
-    }()
+
     
     //main view
     var logoView: UIView = {
@@ -69,6 +59,7 @@ class LoginVc: UIViewController
         text.textColor = .darkGray
         text.translatesAutoresizingMaskIntoConstraints  = false
         text.changeActiveColorPlaceholder()
+        text.font = UIFont.appFont(ofSize: 16)
         return text
     }()
     
@@ -81,6 +72,7 @@ class LoginVc: UIViewController
         text.isSecureTextEntry = true
         text.translatesAutoresizingMaskIntoConstraints  = false
         text.changeActiveColorPlaceholder()
+        text.font = UIFont.appFont(ofSize: 16)
         return text
     }()
     
@@ -95,13 +87,14 @@ class LoginVc: UIViewController
         button.setTitleColor(UIColor(red:0.27, green:0.58, blue:0.65, alpha:0.5), for: .selected)
         button.setTitle( String.fontAwesomeIcon(code: "fa-eye-slash"), for: .normal)
         button.setTitleColor(.lightGray, for: .normal)
+      
         return button
     }()
     
     //5- forget password button
     let forgetPasswordButton: UIButton = {
         let button = Button(type: .custom)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        button.titleLabel?.font = UIFont.appFontRegular(ofSize: 15)
         button.titleLabel?.textAlignment = .center
         button.setTitle("Forget password?".localized(),  for: .normal)
         button.setTitleColor( UIColor.init(hex: "4695a5"), for: .normal)
@@ -123,13 +116,13 @@ class LoginVc: UIViewController
         label.text = "Have no account!".localized()
         label.setAlignment()
         label.translatesAutoresizingMaskIntoConstraints = false
-        
+        label.font = UIFont.appFontRegular(ofSize: 16)
         return label
     }()
     
     var registerButton: UIButton = {
         let button = Button(type: .custom)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.titleLabel?.font = UIFont.appFontRegular(ofSize: 16)
         button.setAlignment()
         button.setTitle("Register".localized(),  for: .normal)
         button.setTitleColor(UIColor.init(hex: "4695a5"), for: .normal)
@@ -144,7 +137,7 @@ class LoginVc: UIViewController
         button.titleLabel?.font = UIFont.appFontRegular(ofSize: 16)
         button.backgroundColor = UIColor.appColor()
         button.titleLabel?.textAlignment = .left
-        button.layer.cornerRadius = 10
+        button.layer.cornerRadius = 4
         button.setTitleColor(.white, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints  = false
         button.pulseColor = .white
@@ -153,6 +146,11 @@ class LoginVc: UIViewController
         return button
     }()
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        loginButton.sizeToFit()
+        loginButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
+    }
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -238,7 +236,7 @@ extension LoginVc
                     Singeleton.userDefaults.set(response.user.toJSON(), forKey: defaultsKey.userData.rawValue)
                     Singeleton.userDefaults.synchronize()
 
-                    
+                    print(Singeleton.userInfo?.toJSON())
                 }
             }, onError: { error in
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
@@ -268,43 +266,118 @@ extension LoginVc
         repo.login(email: emailText, password: passwordText)?.subscribe(onNext:  { response in
             if response != nil {
               Loader.hideLoader()
+                
+                print(response)
+                
                 Singeleton.userDefaults.set(response.token, forKey: defaultsKey.token.rawValue)
-                Singeleton.userDefaults.set(true, forKey: defaultsKey.isLogged.rawValue)
+                
                 Singeleton.userDefaults.set(response.user.toJSON(), forKey: defaultsKey.userData.rawValue)
                 Singeleton.userDefaults.set(response.user.name, forKey: defaultsKey.userName.rawValue)
                 Singeleton.userDefaults.set(response.user.phone, forKey: defaultsKey.userPhone.rawValue)
                 Singeleton.userDefaults.set(response.user.email, forKey: defaultsKey.userEmail.rawValue)
                 Singeleton.userDefaults.set(passwordText, forKey: defaultsKey.userPassword.rawValue)
-
+                
                 Singeleton.userDefaults.synchronize()
                 saveUserId(Userid:(Singeleton.userInfo?.id)!)
                 saveUserAuthKey(Userauthkey:Singeleton.token)
-                let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-                let homeController : GetAllProducteAndFilter = storyboard.instantiateViewController(withIdentifier: "GetAllProducteAndFilter") as! GetAllProducteAndFilter
-                let sideMenuViewController = SideMenuViewController()
-                let appToolbarController = AppToolbarController(rootViewController: homeController)
-                appToolbarController.mytitle="Home".localize()
-                if Localize.currentLanguage() == "en"
-                {
-                    self.Getallproducterepo.SendLanguage(Language: "en", completionSuccess: { (resulte) in
-                        
-                    })
+                
+                if response.user.fieldEmpty == 0  || response.user.fieldEmpty == -1 {
                     
-                    let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, leftViewController: sideMenuViewController)
-                    viewController.isHiddenStatusBarEnabled = false
-                    self.navigationController?.pushViewController(viewController, animated: true)
-                   
-                }
-                else
-                {
-                    self.Getallproducterepo.SendLanguage(Language: "ar", completionSuccess: { (resulte) in
+//                    && response.user.accepted == true
+                    
+                   Singeleton.userDefaults.set(true, forKey: defaultsKey.isLogged.rawValue)
+                    AppDelegate.instance.changeIntialViewController()
+//                    let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+//                    let homeController : HomeVC = storyboard.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
+//                    let sideMenuViewController = SideMenuViewController()
+//                    let appToolbarController = AppToolbarController(rootViewController: homeController)
+//                    appToolbarController.mytitle="Home".localize()
+                    
+                    self.addUserToFireBase((Singeleton.userInfo?.id)!)
+                    
+                    ///////login
+                    if Localize.currentLanguage() == "en"
+                    {
                         
+                        self.Getallproducterepo.SendLanguage(Language: "en", completionSuccess: { (resulte) in
+                            
+                        })
+                        
+//                        let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, leftViewController: sideMenuViewController)
+//                        viewController.isHiddenStatusBarEnabled = false
+                       // self.navigationController?.pushViewController(viewController, animated: true)
+                      
+                        // self.present(viewController, animated: true, completion: nil)
+                         // self.dismiss(animated: false, completion: nil)
+                        
+                    }
+                    else
+                    {
+                        self.Getallproducterepo.SendLanguage(Language: "ar", completionSuccess: { (resulte) in
+                            
+                        })
+//                        let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, rightViewController: sideMenuViewController)
+//                        viewController.isHiddenStatusBarEnabled = false
+                     //   self.navigationController?.pushViewController(viewController, animated: true)
+                       
+                      //  self.present(viewController, animated: true, completion: nil)
+ //self.dismiss(animated: false, completion: nil)
+                        
+                    }
+                    
+                    
+                    
+                }
+                else if response.user.fieldEmpty == 9 {
+                    Loader.showLoader()
+                    self.registerRepo.submitCreditCard(token: String(describing: ""),  completion: { (responsecard) in
+                        print(responsecard)
+                        Singeleton.userDefaults.set(true, forKey: defaultsKey.isLogged.rawValue)
+                        
+                        
+                        AppDelegate.instance.changeIntialViewController()
+                        
+//                        let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+//                        let homeController : HomeVC = storyboard.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
+//                        let sideMenuViewController = SideMenuViewController()
+//                        let appToolbarController = AppToolbarController(rootViewController: homeController)
+//                        appToolbarController.mytitle="Home".localize()
+                        
+                        self.addUserToFireBase((Singeleton.userInfo?.id)!)
+                        
+                        
+                        Loader.hideLoader()
                     })
-                    let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, rightViewController: sideMenuViewController)
-                    viewController.isHiddenStatusBarEnabled = false
-                    self.navigationController?.pushViewController(viewController, animated: true)
+                }
+                else if response.user.fieldEmpty == 1 {
+                    let vc = VerifyCodeVC()
+                     vc.phone = response.user.phone
+                   // self.navigationController?.pushViewController(vc, animated: true)
+                    
+                    self.present(vc, animated: true, completion: nil)
+                  //  self.dismiss(animated: false, completion: nil)
 
                 }
+                else if response.user.fieldEmpty == 2 || response.user.fieldEmpty == 11 {
+                    let vc = RegisterImageVC()
+                  //  self.navigationController?.pushViewController(vc, animated: true)
+                    
+                    self.present(vc, animated: true, completion: nil)
+//self.dismiss(animated: false, completion: nil)
+
+                }
+                else if response.user.fieldEmpty == 8 {
+                    let vc = DetermineLocationVc()
+                   // self.navigationController?.pushViewController(vc, animated: true)
+                   
+                    self.present(vc, animated: true, completion: nil)
+                 //   self.dismiss(animated: false, completion: nil)
+
+                    
+                }
+                
+              
+               
 
                 
 
@@ -315,7 +388,7 @@ extension LoginVc
                 let moyaError  = error as? MoyaError
                 let response: Response? = moyaError?.response
                 let statusCode: Int? = response?.statusCode
-                
+                if let statusCode: Int? = response?.statusCode {
                 switch statusCode! {
                   case 401:
                     DataUtlis.data.ErrorDialog(Title: "Error".localized(), Body:"Invalid mail or password".localized() )
@@ -328,13 +401,23 @@ extension LoginVc
                 default:
                     print("done")
                 }
-                
+                }
             }).disposed(by: self.disposeBag)
         
         } else {
            DataUtlis.data.noInternetDialog()
         }
     }
+    
+    
+    
+    func addUserToFireBase(_ userId: Int) {
+        
+        let ref = userRef.child("\(userId)").child("details")
+        let userData = UserDefaults.standard.object(forKey: defaultsKey.userData.rawValue) as? [String: Any]
+        ref.updateChildValues(userData!)
+    }
+    
     
 }
 

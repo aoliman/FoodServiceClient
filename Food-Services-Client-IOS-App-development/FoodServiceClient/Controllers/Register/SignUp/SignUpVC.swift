@@ -27,14 +27,14 @@ class SignUpVC: UIViewController {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-    
+    var registerRepo = GetallProdacteRepo()
     var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.init(hex: "4695a5")
         label.text = "Register".localized()
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
-        
+        label.font = UIFont.appFontRegular(ofSize: 16)
         return label
     }()
     
@@ -43,7 +43,6 @@ class SignUpVC: UIViewController {
         let view = UIScrollView()
         
         view.translatesAutoresizingMaskIntoConstraints  = false
-        
         return view
     }()
     
@@ -57,7 +56,7 @@ class SignUpVC: UIViewController {
         text.setAlignment()
         text.keyboardType = .emailAddress
         text.translatesAutoresizingMaskIntoConstraints  = false
-        
+        text.font = UIFont.appFontRegular(ofSize: 16)
         return text
     }()
     
@@ -70,7 +69,7 @@ class SignUpVC: UIViewController {
         text.placeholder = "User Name".localized()
         text.setAlignment()
         text.translatesAutoresizingMaskIntoConstraints  = false
-        
+        text.font = UIFont.appFontRegular(ofSize: 16)
         return text
     }()
     
@@ -85,7 +84,7 @@ class SignUpVC: UIViewController {
         text.setAlignment()
         text.keyboardType = .numberPad
         text.translatesAutoresizingMaskIntoConstraints  = false
-        
+        text.font = UIFont.appFontRegular(ofSize: 16)
         return text
     }()
     
@@ -126,31 +125,36 @@ class SignUpVC: UIViewController {
         text.placeholder = "Address".localized()
         text.setAlignment()
         text.translatesAutoresizingMaskIntoConstraints  = false
-        
+        text.font = UIFont.appFontRegular(ofSize: 16)
         return text
     }()
     
     let passwordTextField: ErrorTextField = {
         let text = ErrorTextField()
+         text.changeActiveColorPlaceholder()
+        // text.validator.build(.notEmpty).show()
+         text.validator.build(.notEmpty , .minimumNumberOfPasswordCharacters).show()
+     //   text.validator.build(.minimumNumberOfCharacters,.minimumNumberOfPasswordCharacters).show()
         text.changeActiveColorPlaceholder()
-        text.validator.build(.notEmpty).show()
+      //  text.validator.build(.notEmpty).show()
         text.placeholder = "Password".localized()
         text.setAlignment()
         text.isSecureTextEntry = true
         text.translatesAutoresizingMaskIntoConstraints  = false
-        
+        text.font = UIFont.appFontRegular(ofSize: 16)
         return text
     }()
     
     let confirmPasswordTextField: ErrorTextField = {
         let text = ErrorTextField()
         text.validator.build(.notEmpty).show()
+      //  text.validator.build(.minimumNumberOfCharacters).show()
         text.changeActiveColorPlaceholder()
         text.placeholder = "Confirm Password".localized()
         text.setAlignment()
         text.isSecureTextEntry = true
         text.translatesAutoresizingMaskIntoConstraints  = false
-        
+        text.font = UIFont.appFontRegular(ofSize: 16)
         return text
     }()
     
@@ -159,7 +163,7 @@ class SignUpVC: UIViewController {
         button.titleLabel?.font = UIFont.appFontRegular(ofSize: 16)
         button.backgroundColor = UIColor.appColor()
         button.titleLabel?.textAlignment = .left
-        button.layer.cornerRadius = 10
+        button.layer.cornerRadius = 4
         button.setTitleColor(.white, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints  = false
         button.pulseColor = .white
@@ -186,7 +190,7 @@ class SignUpVC: UIViewController {
         
         self.mainView.bounces = false
         self.mainView.alwaysBounceVertical = false
-        mainView.contentSize = CGSize(width: UIScreen.main.bounds.width, height: 681.6)
+        mainView.contentSize = CGSize(width: UIScreen.main.bounds.width, height: self.view.layer.frame.height)
         
         validationAndKeyboard()
         buttonsActions()
@@ -197,6 +201,12 @@ class SignUpVC: UIViewController {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        continueRegisterButton.sizeToFit()
+        continueRegisterButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
+        
     }
     
     func validationAndKeyboard() {
@@ -210,10 +220,11 @@ class SignUpVC: UIViewController {
         repo.isValid(observables: self.emailTextField.validator.isValid,
                         self.passwordTextField.validator.isValid , self.addressTextField.validator.isValid ,
                             self.phoneTextField.validator.isValid,
-                            self.passwordTextField.validator.isValid,
+                           // self.passwordTextField.validator.isValid,
                             self.confirmPasswordTextField.validator.isValid
             
             ).subscribe(onNext: { (boolValue) in
+                print(boolValue)
                 UiHelpers.setEnabled(button: self.continueRegisterButton, isEnabled: boolValue)
 
             }).disposed(by: self.disposeBag)
@@ -328,7 +339,12 @@ extension SignUpVC
             if DataUtlis.data.isInternetAvailable() {
                 Loader.showLoader()
                 UIApplication.shared.isNetworkActivityIndicatorVisible = true
-                repo.signup(name: nameText, email: emailText, password: passwordText, phone: phoneText, user_address: addressText, user_type: defaultsKey.userType.rawValue, onSuccess: { (response, statusCode) in
+                
+                
+               
+                
+                
+                repo.signup(name: nameText, email: emailText, password: passwordText, phone: "966\(phoneText)", user_address: addressText, user_type: defaultsKey.userType.rawValue, onSuccess: { (response, statusCode) in
                     //stop loading
                     Loader.hideLoader()
                     UIApplication.shared.isNetworkActivityIndicatorVisible = false
@@ -338,17 +354,31 @@ extension SignUpVC
                     Singeleton.userDefaults.set(response?.user.id, forKey: defaultsKey.userId.rawValue)
                     Singeleton.userDefaults.set(passwordText, forKey: defaultsKey.userPassword.rawValue)
                     Singeleton.userDefaults.synchronize()
-                    
+                    saveUserId(Userid:(response?.user.id)!)
+                    saveUserAuthKey(Userauthkey:(response?.token)!)
+                    Singeleton.userDefaults.set(response?.user.toJSON(), forKey: defaultsKey.userData.rawValue)
+
+//                    self.registerRepo.submitCreditCard(token: String(describing: ""),  completion: { (responsecard) in
+//                        print(responsecard)
+//
+//
+//
+//                        myLoader.hideCustomLoader()
+//                    })
                     //got to next
                     let vc = VerifyCodeVC()
                     vc.phone = phoneText
-                    self.navigationController?.pushViewController(vc, animated: true)
+                    //self.navigationController?.pushViewController(vc, animated: true)
+                    self.present(vc, animated: true, completion: nil)
                     
                 }, onFailure: { (errorResponse, statusCode) in
                     Loader.hideLoader()
                     UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                    let errorMessage = errorResponse?.error[0].msg
-                    DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorMessage!)
+                    if let errorMessage = errorResponse?.error[0].msg {
+                       DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorMessage)
+                        Loader.hideLoader()
+                    }
+                    
                 })
 
             } else {

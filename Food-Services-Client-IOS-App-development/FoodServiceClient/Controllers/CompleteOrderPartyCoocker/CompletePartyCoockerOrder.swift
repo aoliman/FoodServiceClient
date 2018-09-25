@@ -12,7 +12,7 @@ import GoogleMaps
 import GooglePlaces
 import  Toast_Swift
 import Localize_Swift
-class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate {
+class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate ,UITextFieldDelegate {
     
     @IBOutlet weak var StackviewNumberofpeople: UIStackView!
     @IBOutlet weak var NumberOfPeople: ErrorTextField!
@@ -30,8 +30,8 @@ class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate {
     var mydate=Date()
     var mytime=Date()
     var ChooseItem:[Int]=[]
-    var price=0
-    var allprice=0
+    var price:Float=0.0
+    var allprice:Float=0.0
     var name:String!
 //map confic
     var lat:Double!
@@ -60,18 +60,36 @@ class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate {
         setuprecognizer()
         self.title = "Compelete Order".localized()
         print(ChooseItem)
+         hideKeyboardWhenTappedAround()
     }
-    func Setupinfo(chooseitem:[Int], priceforperson :Int,Name:String){
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
+    
+    func Setupinfo(chooseitem:[Int], priceforperson :Float,Name:String){
         self.ChooseItem=chooseitem
         self.price=priceforperson
         self.name=Name
        
         
     }
+    
+    @IBAction func DateEdite(_ sender: Any) {
+        DateTap()
+        
+    }
+    
+    @IBAction func TimeEdite(_ sender: Any) {
+        TimeTap()
+    }
+    
     func setup(){
        
-        self.navigationController?.navigationBar.topItem?.backButton.setTitle("Back".localized(), for: .normal)
-            
+//        self.navigationController?.navigationBar.topItem?.backButton.setTitle("Back".localized(), for: .normal)
+        
            
         if Localize.currentLanguage() == "en"{
             StackviewNumberofpeople.semanticContentAttribute = .forceLeftToRight
@@ -107,7 +125,64 @@ class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate {
         CoastPerPersonlabel.text="Cost per person".localized()
         BtnNext.setTitle("Next".localized(), for: .normal)
         BtnNext.layer.cornerRadius=8
+        
+        
+        
+        
+//
+//        let tapdate = UITapGestureRecognizer(target: self, action: #selector(DateTap(_:)))
+//        tapdate.numberOfTapsRequired = 1
+//        DeleveryDate.isUserInteractionEnabled = true
+//        DeleveryDate.addGestureRecognizer(tapdate)
+//
+//
+//        let taptime = UITapGestureRecognizer(target: self, action: #selector(TimeTap(_:)))
+//        taptime.numberOfTapsRequired = 1
+//        Delevrytime.isUserInteractionEnabled = true
+//        Delevrytime.addGestureRecognizer(taptime)
+        
+         DeleveryDate.addTarget(self, action: #selector(DateTap), for: .touchUpInside)
+         Delevrytime.addTarget(self, action: #selector(TimeTap), for: .touchUpInside)
+    
+   
+    
+    
+        
+    
+        
+        
     }
+    @objc func DateTap() {
+        
+        
+        var alert = UIAlertView(title: "Select Date ".localize(), message: "", delegate: self, cancelButtonTitle: "Ok".localize())
+        alert.tag = 1
+        picker = UIDatePicker(frame: CGRect(x: 10, y: alert.bounds.size.height, width: 300, height: 200))
+        picker.locale = Locale(identifier:Localize.currentLanguage()) as Locale!
+        picker.datePickerMode = .date
+        picker.minimumDate = Date()
+        alert.addSubview(picker)
+        alert.bounds = CGRect(x: 0, y: 0, width: 320 + 20, height: alert.bounds.size.height + 216 + 20)
+        alert.setValue(picker, forKey: "accessoryView")
+        alert.delegate = self
+        alert.show()
+        
+    }
+    @objc func TimeTap() {
+        
+        var alert = UIAlertView(title: "Select Time".localize(), message: "", delegate: self, cancelButtonTitle: "Ok".localize())
+        alert.tag = 2
+        picker = UIDatePicker(frame: CGRect(x: 10, y: alert.bounds.size.height, width: 300, height: 200))
+        picker.locale = Locale(identifier:Localize.currentLanguage()) as Locale!
+        picker.datePickerMode = .time
+        picker.minimumDate = Date()
+        alert.addSubview(picker)
+        alert.bounds = CGRect(x: 0, y: 0, width: 320 + 20, height: alert.bounds.size.height + 216 + 20)
+        alert.setValue(picker, forKey: "accessoryView")
+        alert.delegate = self
+        alert.show()
+    }
+    
    // errortextfielid configeure
     func ErrortextConfig(QuantityEditTxt:ErrorTextField){
         
@@ -144,6 +219,7 @@ class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate {
         var alert = UIAlertView(title: "Select Date ".localize(), message: "", delegate: self, cancelButtonTitle: "Ok".localize())
         alert.tag = 1
         picker = UIDatePicker(frame: CGRect(x: 10, y: alert.bounds.size.height, width: 300, height: 200))
+        picker.locale = Locale(identifier:Localize.currentLanguage()) as Locale!
         picker.datePickerMode = .date
         picker.minimumDate = Date()
         alert.addSubview(picker)
@@ -157,6 +233,7 @@ class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate {
         var alert = UIAlertView(title: "Select Time".localize(), message: "", delegate: self, cancelButtonTitle: "Ok".localize())
         alert.tag = 2
         picker = UIDatePicker(frame: CGRect(x: 10, y: alert.bounds.size.height, width: 300, height: 200))
+        picker.locale = Locale(identifier:Localize.currentLanguage()) as Locale!
         picker.datePickerMode = .time
         picker.minimumDate = Date()
         alert.addSubview(picker)
@@ -235,11 +312,18 @@ class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate {
      func EditTotalprice(){
       NumberOfPeople.placeholder=""
             if( NumberOfPeople.text != ""  && NumberOfPeople.text != nil && NumberOfPeople.text != "0"){
+                if (NumberOfPeople.text?.isValidString())! == true {
+                   //  NumberOfPeople.
+                    NumberOfPeople.dividerActiveColor=#colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1)
+                    NumberOfPeople.dividerNormalColor=#colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1)
+                } else {
+                    Totalprice.text="\(Float(NumberOfPeople.text!)!*price) \("Riyal".localize())"
+                    allprice=Float(NumberOfPeople.text!)!*price
+                    NumberOfPeople.dividerActiveColor=#colorLiteral(red: 0.3539252877, green: 0.8294976354, blue: 0.8924615979, alpha: 1)
+                    NumberOfPeople.dividerNormalColor=#colorLiteral(red: 0.3539252877, green: 0.8294976354, blue: 0.8924615979, alpha: 1)
+                }
                 
-                Totalprice.text="\(Int(NumberOfPeople.text!)!*price) \("Riyal".localize())"
-                allprice=Int(NumberOfPeople.text!)!*price
-                NumberOfPeople.dividerActiveColor=#colorLiteral(red: 0.3539252877, green: 0.8294976354, blue: 0.8924615979, alpha: 1)
-                NumberOfPeople.dividerNormalColor=#colorLiteral(red: 0.3539252877, green: 0.8294976354, blue: 0.8924615979, alpha: 1)
+                
                 
                
             }else{
@@ -259,7 +343,12 @@ class CompletePartyCoockerOrder: UIViewController , UIAlertViewDelegate {
             UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please Choose Time")
         }else if (arrayCoordinates.count == 0) {
              UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please Choose Location ")
-        }else {
+        } else  if (NumberOfPeople.text?.isValidString())! == true {
+            //  NumberOfPeople.
+            NumberOfPeople.dividerActiveColor=#colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1)
+            NumberOfPeople.dividerNormalColor=#colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1)
+        UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please Enter People Count")
+        } else {
             ///send to info view controller
            performSegue(withIdentifier: "sureorderpartycooker", sender: nil)
         }

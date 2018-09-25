@@ -69,15 +69,18 @@ class ProfileRespository:BaseRepository {
                     {
                     case StatusCode.success.rawValue:
                         let responseApi =  try response.mapObject(UserNotificationResponseApi.self)
+                        print(responseApi)
                         onSuccess(responseApi, response.statusCode)
                     
                     case StatusCode.complete.rawValue:
                         let responseApi =  try response.mapObject(UserNotificationResponseApi.self)
+                        print(responseApi)
                         onSuccess(responseApi, response.statusCode)
                         
                     default:
                         let errorResponseApi =  try response.mapObject(ErrorResponse.self)
                         onFailure(errorResponseApi, response.statusCode)
+                        myLoader.hideCustomLoader()
                     }
                 } catch {
                     onFailure(nil, 404)
@@ -324,7 +327,7 @@ class ProfileRespository:BaseRepository {
 //    }
     
     public func UpdateProfileImage(id: Int, image:
-            Data, completion: @escaping (Client) -> ())
+            Data, completion: @escaping (User) -> ())
         {
             profileProvider.request(.UpdateImageProfile(data: image, Userid: id))
             {
@@ -335,8 +338,8 @@ class ProfileRespository:BaseRepository {
                 case .success(let response):
                     do {
                         print("response == \(try  response.mapJSON())")
-                        let responseclient =  try response.mapObject(Client.self)
-                        completion(responseclient)
+                        let responseclient =  try response.mapObject(EditProfileResponse.self)
+                        completion(responseclient.user)
     
                     } catch {
                        print("catch")

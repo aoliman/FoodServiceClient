@@ -17,12 +17,12 @@
 "Error"="خطأ";
 "error"="خطأ";
 "isRequired" = "مطلوب *";
-"validationEmail"="البريد الإلكتروني يجب أن يكون فعال";
-"emailOrPhoneError" = "الرجاء إدخال بريد إلكترونى";
-"PhoneError"  = "الرجاء إدخال رقهم هاتف صحيح";
+"validationEmail"="    الرجاء إدخال بريد إلكترونى صحيح";
+"emailOrPhoneError" = "  الرجاء إدخال بريد إلكترونى صحيح";
+"PhoneError"  = "الرجاء إدخال رقم هاتف صحيح";
 
 "ServrError"="خطأ في السيرفر";
-"Authentication Error" = "خطا مصادقه";
+"Authentication Error" = "خطأ مصادقة";
 "This mail or phone already found" = "الايميل او الهاتف موجود مسبقا";
 "Maximum number of photos is nine" = "الحد الاقصي للصور هو تسعه";
 "Something went wrong" = "حدث خطأ ما";
@@ -30,85 +30,86 @@
 //login strings
 "Login" = "تسجيل الدخول";
 "Email" = "البريد الالكتروني";
-"Password" = "كلمه المرور";
-"Save password" = "حفظ كلمه المرور";
-"Forget password?" = "نسيت كلمه المرور؟";
+"Password" = "كلمة المرور";
+"Save password" = "حفظ كلمة المرور";
+"Forget password?" = "نسيت كلمة المرور؟";
 "Have no account!" = "ليس لدي حساب!";
 "Register" = "التسجيل";
-"Invalid mail or password" = "خطأ في البريد الالكتروني او كلمه المرور";
+"Invalid mail or password" = "خطأ في البريد الالكتروني او كلمة المرور";
 // Register strigs
 "Choose registration type" = "اختر نوع التسجيل";
 "PARTY_COOKER" = "طباخ حفلات";
 "HOME_COOKER" = "طباخ بيت";
-"FOOD_CAR" = "سيارات طعام";
+"FOOD_CAR" = "سيارة طعام";
 "DELIVERY_PLACE" = "مكان استلام";
 "DELIVERY_GUY" = "شريك توصيل ";
+
 "About" = "حول التطبيق";
 "User Name" = "اسم المستخدم";
 "Phone" = "الهاتف";
 "Address" = "العنوان";
-"Confirm Password" = "تاكيد كلمه المرور";
+"Confirm Password" = "تاكيد كلمة المرور";
 "Regiteration type" = "نوع التسجيل";
-"firstSelectLocation"="من فضلك اختار الموقع او مكن خدمات الموقع";
+"firstSelectLocation"="من فضلك اختر الموقع او مكان خدمات الموقع";
 "editProductsuccess"="تم تعديل المنتج بنجاح";
 "Normal user" = "مستخدم عادي";
-"PasswordAndConfirmPassword"="كلمة المرور وتاكيد كلمة المرو غير متطابقين";
-
+"PasswordAndConfirmPassword"="كلمة المرور وتاكيد كلمة المرور غير متطابقتين";
+"upload profile photos" = "الصورة الشخصية" ;
 
 // change password strings
-"Change phone number" = "تغير رقم الهاتف";
+"Change phone number" = "تغيير رقم الهاتف";
 "New phone number" = "رقم الهاتف الجديد";
 "Phone number" = "رقم الهاتف";
 "Send" = "ارسال";
 "Activation code" = "كود التفعيل";
 "Confirm activation code" = "تاكيد كود التفعيل";
-"Wrong?" = "خطا؟";
+"Wrong?" = "خطأ؟";
 "Enter Phone Number" = "ادخل رقم الهاتف";
 "Cancel" = "الغاء";
 "Save" = "حفظ";
-"changePassword" = "تغير كلمه المرور";
+"changePassword" = "تغير كلمة المرور";
 "User not found" = "مستخدم غير موجود";
 "Enter valid code" = "كود تفيل غير صحيح";
 
 // continue register strings
 "Workplace image" = "صور مكان العمل";
-"Continue register" = "متابعه التسجيل";
+"Continue register" = "متابعة التسجيل";
 "Analysis Healthy" = "تحليل المشترك الصحي";
 "press long to determine workplace site" = "اضغط مطولا لتحديد موقع العمل";
-"CreditCardInformation" = "بيانات بطاقه الإتمان";
-"Name as written on card" = "الاسم كما هو علي بطاقه الإتمان";
+"CreditCardInformation" = "بيانات بطاقة الإئتمان";
+"Name as written on card" = "الاسم كما هو علي بطاقه الإئتمان";
 "Postal code" = "رمز البريد";
 "Select photo from gallery" = "اختر من الاستوديو";
-"Take Photo" = "اخذ صوره";
+"Take Photo" = "اخذ صورة";
 "add delivery place service" = "اضافه خدمات مكان التسليم";
-"Coker Identity" = "هويه الطباخ";
+"Coker Identity" = "هوية الطباخ";
 
 "House Cooks Photos" = "صور مكان العمل";
 "party cooks Photos" = "صور مكان العمل";
 "Food_Cars_Photos" = "صور مكان العمل";
 "Place_of_delivery" = "صور اماكن التوصيل";
-"The_identity_of_Owner" = "هويه المالك";
-"Driver Identity" = "هويه السائق";
+"The_identity_of_Owner" = "هوية المالك";
+"Driver Identity" = "هوية السائق";
 "Analysis Healthy" = "تحليل المشترك الصحي";
-"Driving License" = "رخصه القياده";
-"employe identity" = "هويه العاملين";
+"Driving License" = "رخصة القيادة";
+"employe identity" = "هوية العاملين";
 "healthy employees" = "تحليل الصحي للعاملين";
 "place_lisence" = "تصريح مكان التسليم";
 "commercial_register" = "السجل التجاري ان وجد";
-"License_of_the_car" = "رخصه السياره";
+"License_of_the_car" = "رخصة السيارة";
 "mounth" = "شهر";
-"Year" = "سنه";
-"Credit card number" = "رقم بطاقه الاتمان";
+"Year" = "سنة";
+"Credit card number" = "رقم بطاقة الائتمان";
 "validate date" = "تاريخ الانتهاء";
-"Country" = "الدوله";
+"Country" = "الدولة";
 "Add" = "اضف";
-"Service Name" = "اسم الخدمه";
-"you must uploade" = "يحب رفع ";
+"Service Name" = "اسم الخدمة";
+"you must uploade" = "يجب رفع ";
 
 //home strings
 "Products" = "المنتجات";
 "Profile" = "الملف الشخصي";
-"No Category Available" = "الاصناف غير متوفره";
+"No Category Available" = "الاصناف غير متوفرة";
 "No Products Available" = "لا يوجد منتجات";
 
 //swift messages
@@ -117,8 +118,8 @@
 "FailedTitle" = "خطأ";
 
 //sideMenu
-"Home" = "الصفحه الرئيسيه";
-"Profile" = "الصفحه الشخصيه";
+"Home" = "الصفحة الرئيسية";
+"Profile" = "الصفحة الشخصية";
 "Settings" = "الإعدادات";
 "Contact Us" = "تواصل معانا";
 "Logout" = "تسجيل خروج";
@@ -130,9 +131,9 @@
 "NO" = "لا";
 
 //chat
-"Chat list" = "قائمه الاصدقاء";
-"Mangment"= "الاداره";
-"Type a message" = "اكتب رساله";
+"Chat list" = "قائمة الاصدقاء";
+"Mangment"= "الادارة";
+"Type a message" = "اكتب رسالة";
 
 //profile
 "profileContactUs"="تواصل";
@@ -140,7 +141,7 @@
 "profileWorkingLocation" = "موقع العمل";
 
 // edit profile
-"profilePassword"= "الرقم السري";
+"profilePassword"= "كلمة المرور";
 "profilEditSuccessfully"= "تم تعديل البيانات بنجاح";
 "profilEditValidation"= "برجاء ادخال البيانات بنجاح";
 
@@ -153,7 +154,7 @@
 "profileDeliveyLocationsButton"= "تاكيد  طريقة  التسليم";
 
 
-"profileCreditCard"= "البطاقة الاتئمانية";
+"profileCreditCard"= "البطاقة الائتمانية";
 "profilePlaceLocation"= "الموقع";
 "profileUserName"= "الاسم";
 "profileMobile"= "رقم الهاتف";
@@ -174,22 +175,22 @@
 "Maximum orders number" = "اكثر عدد للطلبات";
 "maxOrdersInDay" = "اكثر عدد طلبات في اليوم";
 "Time" = "الوقت";
-"cookingDuration" = "مده التجهيز";
+"cookingDuration" = "مدة التجهيز";
 "Product ingredients" = "المكونات";
 "Select Category" = "اختر صنف";
 "Price" = "السعر";
 "Product Name" = "اسم المنتج";
 "DAY" = "يوم";
-"HOUR" = "ساعه";
-"MIN" = "دقيقه";
+"HOUR" = "ساعة";
+"MIN" = "دقيقة";
 "Components" = "المكونات";
-"product photo can't be empty" = "يجب رفع صوره المنتج";
-"Product preparation method" = "حدد طريقه الاعداد";
+"product photo can't be empty" = "يجب رفع صورة المنتج";
+"Product preparation method" = "حدد طريقة الاعداد";
 
 //home deliver place
 "client:" = "العميل:";
 "cooker:" = "الطباخ:";
-"Order number" = "رقم الطلب";
+"Order number" = "رقم الطلب :";
 "totalPrice" = "السعر الاجمالي";
 "Sr" = "ريال";
 "client" = "العميل";
@@ -252,14 +253,14 @@
 "delivery date" = "تاريخ التوصيل";
 "notFound" = "لا يوجد";
 
-////////
+
 
 
 
 "Accept"  =  "قبول" ;
 "Refuse"  =  "رفض " ;
 "Allprice"  =  "السعر الاجمالي" ;
-"Order Number"  =  "رقم الطلب" ;
+"Order Number"  =  "رقم الطلب:" ;
 "Client Name"  =  "آسم العميل" ;
 "Duration"  =  "مدة التنفيذ" ;
 "Name"  =  "الصنف" ;
@@ -335,3 +336,204 @@
 "Cart" = "العربه" ;
 "Back" = "رجوع" ;
 "Producte Details" = " تفاصيل المنتج" ;
+
+
+
+
+
+
+
+
+"Done" = "تم" ;
+"New Password" = "كلمه سر جديدة" ;
+"Old Password" = "كلمه سر قديمة" ;
+"Edite Profile" = "تعديل الملف الشخصي" ;
+"Ensure" = "تآكيد الامر" ;
+"Confirm Password" = "تاكيد كلمه السر" ;
+
+"Determinde Delivary Time" = "حدد معاد الاستلام";
+"Select Time" = "  حدد الوقت التسليم " ;
+"Select Date" = "حدد التاريخ" ;
+"You Want To Logout" = "هل تريد الخروج" ;
+"Order Rate" = "تقييم الطلب" ;
+"Delivery Rate" = "تقييم التوصيل" ;
+"Choose Order Rate" = "اختر تقييم الطلب" ;
+"Choose Delivery Rate" = "اختر تقييم التوصيل" ;
+"Delivered" = "تم التوصيل " ;
+"Order Delivered" = "تم توصيل الطلب " ;
+"Order Detailes" = "تفاصيل الطلب" ;
+"Long Press To Determine Location" = "اضغط مطولا لتحديد الموقع" ;
+"Distance" = "المسافه" ;
+"Delivery Cost" = "تكلفه التوصيل" ;
+
+
+"Ingredients" = "المكونات" ;
+"Choose Delivery Place" = "اختر مكان التسليم" ;
+"Please choose new delivery place from the map" = "الرجاء اختيار مكان للتسليم" ;
+"Address" = "العنوان" ;
+"Done" = "تم" ;
+"Total Charge" = "التكلفه الكليه " ;
+"Next" = "التالي" ;
+"Maxmum order Request" = "اكبر عدد للطلب" ;
+"Minimum order Request" = "اقل عدد للطلب" ;
+"producte name" = "اسم المنتج " ;
+"Price" = "السعر " ;
+"Quantity" = "الكمية" ;
+
+"Party Cookerm" = " طباخ الحفلات ";
+"Home Cookerm" =  " طباخ المنزل " ;
+"  Food Car " =   "سيارات الطعام" ;
+"Resturante" =    " المطعم     " ;
+"Payment Method" = "طريقة الدفع" ;
+"Select" = "اختر" ;
+
+"Add new Credit card" = "آضف بطاقة ائتمان جديدة";
+
+"Add Payment" = "اضف طريق دفع" ;
+"Credit is Added" = "تم اضافه بطاقة الائتمان" ;
+"Choose Answer" = "اختر اجابة" ;
+"You Want To Delate" = "هل تريد المسح" ;
+"Diraction" = "الاتجاه" ;
+"Get Delivery Guy" = "الحصول علي عامل توصيل " ;
+"Address" = "العنوان" ;
+"Total Charge" = "التكلفة الكلية" ;
+
+"Order Send" = "تم ارسال الطلب" ;
+"Choose Order Rate" = "اختر تقييم للطلب" ;
+"Choose Delivery Rate" = "اختر تقييم للتوصيل" ;
+"Order Rate" = "تقييم الطلب" ;
+"Delivery Rate" = "تقييم التوصيل" ;
+"Payment Method" = "طريقة الدفع" ;
+"Enter current Password" = "ادخل كلمة السر الحالية" ;
+"Enter New Password" = "ادخل كلمة سر جديدة" ;
+"Enter Confirem Password" = "تآكيد كلمة السر" ;
+"New Password Not Equale Confilem Password" = "الرجاء التاكيد من كلمه السر" ;
+"Current  Password is Incorrect" = "كلمه السر الحاليه غير " ;
+"Phone Number" = "رقم التليفون" ;
+"Ensure" = "التاكيد" ;
+"Delivery Cost" = "تكلفة التوصيل" ;
+"Confirm Order" = "تاكيد الطلب" ;
+"Please Choose Location " = "الرجاء اختيار مكان " ;
+"Order Send" = "تم ارسال الطلب" ;
+"No members" = "لاتوجد اعضاء" ;
+"Pleas Wait Untill Load" = "الرجاء الانتظار لحين انتهاء التحميل" ;
+"Determinde Delivary Day" = "حدد يوم و وقت  التوصيل" ;
+"Determinde Delivary Time" = "حدد معاد الاستلام" ;
+"Please Enter People Count" = "الرجاء ادخال عدد الافراد" ;
+"Number of individuals" = "عدد الافراد" ;
+"Select Time" = "  حدد وقت التسليم " ;
+"Select Date " = " اختر تاريخ التسليم" ;
+"Next" = "التالي" ;
+"Cost per person" = "السعر لكل فرد " ;
+"TotalPrice" = "التكلفه النهائيه" ;
+"Connect" = "التواصل" ;
+"Location Of Workplace" = "اختر مكان العمل" ;
+"Select the delivery method" = "اختر طريقه التوصيل" ;
+
+"Choose location" = "اختر مكان" ;
+
+
+
+
+"No Delivery Place" = "لايوجد مكان للتوصيل" ;
+
+"Date and time" = "التاريخ والوقت" ;
+
+"Cart" = "العربه" ;
+"Lable" = "لاقيمة" ;
+"Rate" = "التقييم" ;
+"Ingredients" = "المكونات" ;
+"No Orders Available" = "لاتوجد طلبات" ;
+"Apply Filter" = "اختر تصنيف" ;
+"Order status :" = "  اختر حالة الطلب : " ;
+"Delivered" = " وصل " ;
+"Get Delivery Guy" = "الحصول علي عامل توصيل" ;
+"Get Directions" = "الحصول علي الاتجاهات" ;
+"Number of Guests" = "عدد العملاء" ;
+"Client Name" = "اسم العميل" ;
+
+"Order Number : " =  "رقم الطلب : " ;
+"Order Status : " =  "حالة الطلب :" ;
+"Order Details : " = "تفاصيل الطلب  :" ;
+"Box" = "طلبات" ;
+"Rated" = "تقييم" ;
+"Guest" = "عميل" ;
+"Total Distance" = "المسافة الكلية" ;
+"Order Details" = " تفاصيل الطلب" ;
+"Order Status" = " حالة الطلب : " ;
+
+"Order Location" = "مكان الطلب" ;
+
+
+
+
+
+"order num" = "رقم الطلب" ;
+"Accepted" = "تم الموافقة" ;
+"Refused" = "تم الرفض" ;
+"Pending" = "قيد الأنتظار" ;
+"Finished" = "تم الانتهاء" ;
+"Delivered" = "تم الأستلام" ;
+"Arrived" = "تم الوصول" ;
+"OnTheWay" = "في الطريق" ;
+"  new  " = "  جديد  " ;
+"Add Card" = " اضف " ;
+"Deliverd" = "تم الاستلام " ;
+
+"Order Has Send" = "تم";
+
+"No Food Car Available" = "لايوجد سيارات طعام" ;
+"No Party Cooker Available" = "لايوجد طباخ حفلات " ;
+"No Home cooker Available" = "لايوجد طباخ منزلي" ;
+"No Resturant Available" = "لايوجد مطعم" ;
+
+
+"Chat" = "المحادثات" ;
+
+"Please choose Item" = "الرجاء اختيار منتج" ;
+
+"OnTheWay"="في الطريق";
+"ONTHEWAY"="في الطريق";
+"Delivery Guy name"=" اسم عامل التوصيل";
+"Delivery Guy Phone"="هاتف عامل التوصيل ";
+"Total Price"="السعر الاجمالى";
+
+"No members" = "لا يوجد آشخاص للدردشة";
+
+"Mobile"=" رقم الموبيل  ";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

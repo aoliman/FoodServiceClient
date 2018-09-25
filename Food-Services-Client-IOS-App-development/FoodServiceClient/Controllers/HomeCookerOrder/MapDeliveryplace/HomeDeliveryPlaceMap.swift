@@ -40,35 +40,59 @@ class HomeDeliveryPlaceMap: UIViewController {
     
    
    var customView:HomeDeliveryplaceAdress!
-    
+
     
     var MyDeliveryPlace:[HomeCookerPlacemodel]=[]
     var CountofProducte:[Int]=[]
     var ChooseItemsids :[Int]=[]
     var Productesdata:[getproductdata] = []
     var markers:[GMSMarker] = []
-    
+    var senddate:Date!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        
         // Do any additional setup after loading the view.
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
     }
     func setup(){
         
+        
+        
+        Setupmap()
+        
+       
+        
+  
+        
+        
+      
+        
+      
+       
+        
+        
+    
+        
+        
+    }
+    func Setupmap(){
         self.navigationController?.navigationBar.tintColor = .white
         setupNavigationBar()
-        self.navigationItem.backBarButtonItem?.title = "Back".localized()
+        //        self.navigationItem.backBarButtonItem?.title = "Back".localized()
         self.title = "Choose Delivery Place".localized()
         deliveryplaceLabel.text = "".localized()
         deliveryplaceLabel.text = "Please choose new delivery place from the map".localize()
         
-        mylocation = locationmaanager.location!
+        
         self.navigationController?.navigationBar.tintColor = .white
         setupNavigationBar()
-        self.navigationItem.backBarButtonItem?.title = "Back".localized()
-        
-        
+        //        self.navigationItem.backBarButtonItem?.title = "Back".localized()
         
         //configurelocation manger
         locationmaanager = CLLocationManager()
@@ -77,6 +101,7 @@ class HomeDeliveryPlaceMap: UIViewController {
         locationmaanager.distanceFilter = 50
         locationmaanager.startUpdatingLocation()
         locationmaanager.delegate = self
+        
         
         //create google map
         let camera = GMSCameraPosition.camera(withLatitude: mylocation.coordinate.latitude,
@@ -90,23 +115,22 @@ class HomeDeliveryPlaceMap: UIViewController {
         
         // Add the map to the view, hide it until we've got a location update.
         Myviewmap.addSubview(mapView)
-        mapView.isHidden = true
+        mapView.isHidden = false
         mapView.delegate=self
-        //defined mapview apper
-        myview=UIView(frame: CGRect.init(x: 0, y: 0, width: 200, height: 70))
-        btn = RaisedButton(frame: CGRect.init(x: 20, y: 10, width: 160, height: 50))
-        
-        
-       self.showmark.append(CLLocationCoordinate2D(latitude: Double(self.mylocation.coordinate.latitude) , longitude:  Double(self.mylocation.coordinate.longitude)))
-        GetAllPlacesOfHmeCoker(id: Productesdata[0].owner.id, type: "HOME_COOKER")
-       
-        
+          mylocation = locationmaanager.location!
         
         self.customView = Bundle.main.loadNibNamed("HomeDeliveryplaceviewAdressView", owner: self, options: nil)![0] as! HomeDeliveryplaceAdress
         self.customView.frame = CGRect(x: self.view.layer.frame.width*5/100, y: self.view.layer.frame.height, width: self.view.layer.frame.width-self.view.layer.frame.width*10/100, height: self.view.layer.frame.height*20/100)
         self.view.addSubview(self.customView)
         
+      
+        //defined mapview apper
+        myview=UIView(frame: CGRect.init(x: 0, y: 0, width: 200, height: 70))
+        btn = RaisedButton(frame: CGRect.init(x: 20, y: 10, width: 160, height: 50))
         
+        
+        self.showmark.append(CLLocationCoordinate2D(latitude: Double(self.mylocation.coordinate.latitude) , longitude:  Double(self.mylocation.coordinate.longitude)))
+        GetAllPlacesOfHmeCoker(id: Productesdata[0].owner.id, type: "HOME_COOKER")
     }
     func updatedata(productesdata:[getproductdata] , ChooseItemsids :[Int] , countofProducte:[Int] ){
         self.ChooseItemsids = ChooseItemsids
@@ -173,6 +197,7 @@ extension HomeDeliveryPlaceMap: CLLocationManagerDelegate {
     // Handle incoming location events.
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location: CLLocation = locations.last!
+        locationmaanager.stopUpdatingLocation()
         print("Location: \(location)")
         mylocation=locations[0]
         let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude,
@@ -185,7 +210,8 @@ extension HomeDeliveryPlaceMap: CLLocationManagerDelegate {
         } else {
             // mapView.animate(to: camera)
         }
-        
+//        Setupmap()
+//        setup()
         
         
     }
@@ -308,6 +334,7 @@ extension HomeDeliveryPlaceMap: CLLocationManagerDelegate {
             self.customView.BtnDone.layer.cornerRadius = 3
             self.customView.layer.cornerRadius = 3
             self.customView.BtnDone.setTitle("Done".localize() , for: .normal )
+            self.customView.BtnDone.removeTarget(nil, action: nil, for: .allEvents)
             self.customView.BtnDone.addTarget(self, action: #selector(self.SendOrderDone), for: .touchUpInside)
             self.customView.frame = CGRect(x: self.view.layer.frame.width*5/100, y: self.view.layer.frame.height*80/100, width: self.view.layer.frame.width-self.view.layer.frame.width*10/100, height: self.view.layer.frame.height*20/100)
             self.view.layoutIfNeeded()
@@ -410,10 +437,11 @@ extension HomeDeliveryPlaceMap: CLLocationManagerDelegate {
             "client": (Singeleton.userInfo?.id!)! ,
             "cookerDeliveryType": "DELIVERY_PLACE",
             "deliveryPlace": deliveryplaceid,
-            "productOrders":dictionarydata
+            "productOrders":dictionarydata,
+            "deliveryDate":Int( (senddate.timeIntervalSince1970)*1000 )
         ]
     
-        Alamofire.request("http://165.227.96.25/api/v1/home-cookers/\((Productesdata[0].owner.id)!)/orders", method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseJSON { response in
+        Alamofire.request("http://67.205.139.227/api/v1/home-cookers/\((Productesdata[0].owner.id)!)/orders", method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseJSON { response in
             print("Request  \(response.request)")
             
             print(parameters)
@@ -427,7 +455,7 @@ extension HomeDeliveryPlaceMap: CLLocationManagerDelegate {
                         myLoader.hideCustomLoader()
                         UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Order is send")
                         self.dismiss(animated: false, completion: nil)
-                        PresentHomeViewController(ViewController:self)
+                        PresentHomeViewController(myViewController:self)
                         
                     }
                         
@@ -435,22 +463,31 @@ extension HomeDeliveryPlaceMap: CLLocationManagerDelegate {
                         print("An Error Done When Convert Data Success")
                         UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(response.result.value)")
                     }
-                }else if(response.response?.statusCode == 400) {
-                    print("Home Cooker doesn’t support this deliveryPlace")
+                }
+                else{
+                    do{
+                        if response.response?.statusCode == 422 {
+                            if let result = response.result.value {
+                                let json = result as! [String: Any]
+                                if let predictionArray = json["error"] as? [[String: Any]],
+                                    let firstPrediction = predictionArray.first {
+                                    print(firstPrediction)
+                                  Alert.showAlert(title: "Error".localized(), message: firstPrediction["msg"] as! String)
+
+                                }
+                                print(json)
+                            }
+                       
+
+
+                            
+                        }else{
+                            let json = try  JSON(data: response.data!)
+                            Alert.showAlert(title: "Error".localized(), message: json["error"].string!)
+                        }
+                    
+                    }catch{}
                     myLoader.hideCustomLoader()
-                    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Home Cooker doesn’t support this deliveryPlace")
-                }else if(response.response?.statusCode == 403) {
-                    print("Order’s cooker is the only one who can accept or finish the order")
-                    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(response.result.value)")
-                    Loader.hideLoader()
-                }else if(response.response?.statusCode == 422) {
-                    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(response.result.value)")
-                    print(response.result.value)
-                    Loader.hideLoader()
-                }else if(response.response?.statusCode == 404) {
-                    print("RESPONSE 1 \(response.result.value)")
-                    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(response.result.value)")
-                    Loader.hideLoader()
                 }
                 
                 

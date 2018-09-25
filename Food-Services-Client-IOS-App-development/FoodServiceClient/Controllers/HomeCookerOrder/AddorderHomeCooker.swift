@@ -11,8 +11,12 @@ import FSPagerView
 import  AlamofireImage
 import  Alamofire
 import  Localize_Swift
+import SwiftyJSON
 
-class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewDataSource{
+import Gloss
+import Moya_Gloss
+
+class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewDataSource,UIAlertViewDelegate{
  
  
     @IBOutlet weak var Totalpricelabel: UILabel!
@@ -20,7 +24,15 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
     @IBOutlet weak var brnSendorder: UIButton!
     @IBOutlet weak var TableViewOrder: UITableView!
    
-    
+    @IBOutlet weak var ProducteLAbel: UILabel!
+    @IBOutlet weak var HomeCookerView: UIView!
+    @IBOutlet weak var DateAndTime: UILabel!
+    @IBOutlet weak var DateValue: UILabel!
+    @IBOutlet weak var TimeValue: UILabel!
+    @IBOutlet weak var BtnTime: UIButton!
+    @IBOutlet weak var BtnDate: UIButton!
+    @IBOutlet weak var HomeCookerHeight: NSLayoutConstraint!
+    @IBOutlet weak var BackTableView: UIView!
     
     var CountofProducte:[Int]=[]
     var ChooseItemsids :[Int]=[]
@@ -30,7 +42,9 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
     var gradientView  = CAGradientLayer()
     var  vrate:Float = 0.0
     var type:String!
-   
+    var picker : UIDatePicker!
+    var mydate:Date!
+    var mytime:Date!
     var GetallHomeCookerplaces = GetallProdacteRepo()
     
     
@@ -39,20 +53,53 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
         super.viewDidLoad()
         setup()
         
+        //AddShadow(view:TableViewOrder.backgroundView!)
+       
     }
+    
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        
+     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
+    
+    
     func setup(){
         self.navigationController?.navigationBar.tintColor = .white
         setupNavigationBar()
-        self.navigationItem.backBarButtonItem?.title = "Back".localized()
+//        self.navigationItem.backBarButtonItem?.title = "Back".localized()
         
         self.title = "Cart".localized()
         
-        for index in 0...(ChooseItemsids.count-1) {
-            if Productesdata[index].minAmountToOrder != nil {
-                CountofProducte.append(Productesdata[index].minAmountToOrder)
+        
+        if Productesdata[0].kind == "restaurant-owner-product" {
+            for index in 0...(ChooseItemsids.count-1) {
+               
+                CountofProducte.append(1)
+             
+                
             }
-            
+        }else{
+            for index in 0...(ChooseItemsids.count-1) {
+                if Productesdata[index].minAmountToOrder != nil {
+                    CountofProducte.append(Productesdata[index].minAmountToOrder)
+                }
+                
+            }
         }
+        
+        
+        
+        
+        
+        
+        
         TableViewOrder.dataSource = self
         TableViewOrder.delegate = self
         
@@ -62,7 +109,7 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
         brnSendorder.addTarget(self, action: #selector(Sendtonext), for: .touchUpInside)
         myLoader.showCustomLoaderview(uiview: self.view)
         
-        Alamofire.request("http://165.227.96.25/api/v1/vat-rate").responseJSON { (data) in
+        Alamofire.request("http://67.205.139.227/api/v1/vat-rate").responseJSON { (data) in
             switch data.result {
             case .success:
                 print(data.response?.statusCode)
@@ -81,25 +128,99 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
                 }
                 
                 myLoader.hideCustomLoader()
-            case .failure(let error):
+            case .failure(_):
                 break
             }
         }
         
         
         
+        if self.type == "home-cookers" {
+            HomeCookerHeight.constant = UIScreen.main.bounds.height*20/100
+            ProducteLAbel.text = "Products".localize()
+            HomeCookerView.isHidden = false
+            
+            
+            
+            
+           // HomeCookerView.layer.sha
+            DateAndTime.text = "Date and time".localize()
+            DateValue.text = "Delivery date".localize()
+            TimeValue.text = "Delivery time".localize()
+            BtnTime.titleLabel?.font = UIFont.fontAwesome(ofSize: 30)
+             BtnTime.titleLabel?.adjustsFontSizeToFitWidth = true
+            BtnTime.setTitle(String.fontAwesomeIcon(name: .clockO), for: .normal)
+            BtnDate.titleLabel?.font = UIFont.fontAwesome(ofSize: 30)
+            BtnDate.titleLabel?.adjustsFontSizeToFitWidth = true
+            BtnDate.setTitle(String.fontAwesomeIcon(name: .calendar), for: .normal)
+            BtnDate.addTarget(self, action: #selector(MovetoCalender), for: .touchUpInside)
+            BtnTime.addTarget(self, action: #selector(MovetoTime), for: .touchUpInside)
+            HomeCookerView.layoutIfNeeded()
+            
+            AddShadow(view:HomeCookerView)
+        }else{
+            HomeCookerHeight.constant = 4
+            ProducteLAbel.text = "Products".localize()
+            HomeCookerView.isHidden = true
+            DateAndTime.isHidden = true
+            DateValue.isHidden = true
+            TimeValue.isHidden = true
+            BtnTime.isHidden = true
+            BtnTime.isHidden = true
+            BtnDate.isHidden = true
+//            BtnDate.addTarget(self, action: #selector(), for: .touchUpInside)
+//            BtnTime.addTarget(self, action: #selector(), for: .touchUpInside)
+            
+        }
+        AddShadow(view:BackTableView)
+        
+        let tapdate = UITapGestureRecognizer(target: self, action: #selector(DateTap(_:)))
+        tapdate.numberOfTapsRequired = 1
+        DateValue.isUserInteractionEnabled = true
+        DateValue.addGestureRecognizer(tapdate)
+        
+        
+        let taptime = UITapGestureRecognizer(target: self, action: #selector(TimeTap(_:)))
+        taptime.numberOfTapsRequired = 1
+        TimeValue.isUserInteractionEnabled = true
+        TimeValue.addGestureRecognizer(taptime)
         
   
+    }
+    @objc func DateTap(_ recognizer: UITapGestureRecognizer) {
+        
+        MovetoCalender()
+        
+    }
+    @objc func TimeTap(_ recognizer: UITapGestureRecognizer) {
+        
+        MovetoTime()
+        
+    }
+    func AddShadow(view:UIView){
+        
+        var  shadowLayer = CAShapeLayer()
+        shadowLayer.path = UIBezierPath(roundedRect: view.layer.bounds, cornerRadius: 3).cgPath
+        shadowLayer.fillColor = UIColor.white.cgColor
+        
+        shadowLayer.shadowColor = UIColor.darkGray.cgColor
+        shadowLayer.shadowPath = shadowLayer.path
+        shadowLayer.shadowOffset = CGSize(width: 1, height: 1)
+        shadowLayer.shadowOpacity = 0.5
+        shadowLayer.shadowRadius = 2
+        
+        view.layer.insertSublayer(shadowLayer, at: 0)
+        shadowLayer.layoutIfNeeded()
+       
     }
     
     
     
     @objc func Sendtonext(){
-        if (type == "food-cars" || type == "restaurant-owners" ){
-            RequsestSendOrder(Type:type)
-        }else{
-         GetAllPlacesOfHmeCoker(id: Productesdata[0].owner.id, type: type)
-        }
+        
+        PushPopcredite()
+        
+        
         
         
     }
@@ -119,7 +240,12 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
              cell.priceValue.text = "\(Productesdata[indexPath.row].price!) \("Riyal".localize())"
         cell.MinuseBtn.tag = indexPath.row
         cell.PlusBtn.tag = indexPath.row
-        cell.CountValue.text=String(CountofProducte[indexPath.row])
+        if Productesdata[indexPath.row].kind == "restaurant-owner-product" {
+         cell.CountValue.text=String(1)
+        }else{
+            cell.CountValue.text=String(CountofProducte[indexPath.row])
+
+        }
         cell.MinuseBtn.addTarget(self, action: #selector(MinusCount(sender:)), for: .touchUpInside)
         cell.PlusBtn.addTarget(self, action: #selector(PlusCount(sender:)), for: .touchUpInside)
         
@@ -137,15 +263,23 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
     
     @objc func PlusCount(sender : UIButton) {
         var cell:InfoHomeCookerCell = TableViewOrder.cellForRow(at: IndexPath(row:sender.tag , section: 0)) as! InfoHomeCookerCell
-        
-        if((Productesdata[sender.tag].maxAmountToOrder)! > Int(cell.CountValue.text!)!  ){
-            cell.CountValue.text = String( Int(cell.CountValue.text!)!+1 )
+        if (Productesdata[sender.tag].kind ==  "restaurant-owner-product" ) {
+            
+                cell.CountValue.text = String( Int(cell.CountValue.text!)!+1 )
                 CountofProducte[sender.tag] = Int(cell.CountValue.text!)!
                 self.Updatetototalprice()
-        }else{
-            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\("Maxmum order Request".localize()) \((Productesdata[sender.tag].maxAmountToOrder)!)")
             
+        }else{
+            if((Productesdata[sender.tag].maxAmountToOrder)! > Int(cell.CountValue.text!)!  ){
+                cell.CountValue.text = String( Int(cell.CountValue.text!)!+1 )
+                CountofProducte[sender.tag] = Int(cell.CountValue.text!)!
+                self.Updatetototalprice()
+            }else{
+                UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\("Maxmum order Request".localize()) \((Productesdata[sender.tag].maxAmountToOrder)!)")
+                
+            }
         }
+        
         
       }
     
@@ -162,19 +296,29 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
 //        self.Updatetototalprice()
 //    }
     
-    
-    
-    
-    
-    
-    if((Productesdata[sender.tag].minAmountToOrder)! < Int(cell.CountValue.text!)!  ){
-        cell.CountValue.text = String( Int(cell.CountValue.text!)!-1 )
-        CountofProducte[sender.tag] = Int(cell.CountValue.text!)!
-        self.Updatetototalprice()
-    }else{
-        UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\("Minimum order Request".localize()) \((Productesdata[sender.tag].minAmountToOrder)!)")
+    if (Productesdata[sender.tag].kind ==  "restaurant-owner-product" ) {
         
+        if( 1 < Int(cell.CountValue.text!)!  ){
+            cell.CountValue.text = String( Int(cell.CountValue.text!)!-1 )
+            CountofProducte[sender.tag] = Int(cell.CountValue.text!)!
+            self.Updatetototalprice()
+        }
+        
+    }else{
+        if((Productesdata[sender.tag].minAmountToOrder)! < Int(cell.CountValue.text!)!  ){
+            cell.CountValue.text = String( Int(cell.CountValue.text!)!-1 )
+            CountofProducte[sender.tag] = Int(cell.CountValue.text!)!
+            self.Updatetototalprice()
+        }else{
+            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\("Minimum order Request".localize()) \((Productesdata[sender.tag].minAmountToOrder)!)")
+            
+        }
     }
+    
+    
+    
+    
+    
     
     
     
@@ -185,8 +329,13 @@ class AddorderHomeCooker: UIViewController , UITableViewDelegate,UITableViewData
         var allprice:Float = 0
         var total:Float = 0
         for index in 0...ChooseItemsids.count-1 {
-          allprice = allprice + Float(CountofProducte[index])*Float(Productesdata[index].price)
-        }
+                allprice = allprice + Float(CountofProducte[index])*Float(Productesdata[index].price)
+            }
+            
+     
+        
+        
+        
         
         total = allprice + allprice*vrate/100
         
@@ -253,6 +402,7 @@ extension AddorderHomeCooker {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let vc:HomeDeliveryPlaceMap = storyboard.instantiateViewController(withIdentifier: "HomeDeliveryPlaceMap") as! HomeDeliveryPlaceMap
                 vc.updatedata(productesdata: self.Productesdata, ChooseItemsids: self.ChooseItemsids, countofProducte: self.CountofProducte)
+                vc.senddate = self.combineDateWithTime(date: self.mydate, time: self.mytime)!
                 self.navigationController?.pushViewController(vc, animated: true)
                myLoader.hideCustomLoader()
             }
@@ -264,11 +414,49 @@ extension AddorderHomeCooker {
     
     
     
-    
+    func PushPopcredite(){
+        if(self.type == "food-cars" || type == "restaurant-owners" ){
+            let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            let passController : PayMentMenu = storyboard.instantiateViewController(withIdentifier: "PayMentMenu") as! PayMentMenu
+            
+            passController.modalPresentationStyle = .custom
+            passController.modalTransitionStyle = .crossDissolve
+            
+            passController.delegte = self
+            // passController.OrderOwner = orderDetails?.order!
+            present(passController, animated: true, completion: nil)
+            
+        }else{
+            if mydate == nil  {
+                UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please Choose Day")
+            }else if mytime == nil {
+                UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please Choose Time")
+            }else{
+                let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+                let passController : PayMentMenu = storyboard.instantiateViewController(withIdentifier: "PayMentMenu") as! PayMentMenu
+                
+                passController.modalPresentationStyle = .custom
+                passController.modalTransitionStyle = .crossDissolve
+                
+                passController.delegte = self
+                // passController.OrderOwner = orderDetails?.order!
+                present(passController, animated: true, completion: nil)
+                
+                // self.navigationController?.pushViewController(passController, animated: false)
+            }
+            
+        }
+      
+        
+        
+    }
     
     
     
     func RequsestSendOrder(Type:String){
+        
+        
+       
         
         myLoader.showCustomLoaderview(uiview: self.view)
         
@@ -286,12 +474,23 @@ extension AddorderHomeCooker {
         }
         
         if(self.type == "home-cookers"){
-            parameters = [
-                "client":  (Singeleton.userInfo?.id!)! ,
-                "cookerDeliveryType": "COOKER_PLACE",
-                "productOrders":dictionarydata
-            ]
-        }else if(self.type == "food-cars"){
+            if mydate == nil  {
+              UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please Choose Day")
+                return
+            }else if mytime == nil {
+              UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please Choose Time")
+                return
+            }else{
+               let senddate =  combineDateWithTime(date: mydate, time: mytime)!
+                parameters = [
+                    "client":  (Singeleton.userInfo?.id!)! ,
+                    "cookerDeliveryType": "COOKER_PLACE",
+                    "productOrders":dictionarydata ,
+                    "deliveryDate":Int( (senddate.timeIntervalSince1970)*1000 )
+                ]
+            }
+           
+        }else if(self.type == "food-cars" || type == "restaurant-owners" ){
             parameters = [
                 "client":  (Singeleton.userInfo?.id!)! ,
                 "productOrders":dictionarydata
@@ -301,13 +500,14 @@ extension AddorderHomeCooker {
         
                 
 
-            Alamofire.request("http://165.227.96.25/api/v1/\((self.type)!)/\((Productesdata[0].owner.id)!)/orders", method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseJSON { response in
+            Alamofire.request("http://67.205.139.227/api/v1/\((self.type)!)/\((Productesdata[0].owner.id)!)/orders", method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseJSON { response in
             print("Request  \(response.request)")
-            
+
             print(parameters)
             switch response.result {
             case .success:
                 print(response.response?.statusCode)
+                 print("RESPONSE 1 \(response.result.value)")
                 if(response.response?.statusCode == 201){
                     do {
                         let respnseapisucess = try
@@ -315,35 +515,43 @@ extension AddorderHomeCooker {
                          myLoader.hideCustomLoader()
                          UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Order is send")
                          self.dismiss(animated: false, completion: nil)
-                        PresentHomeViewController(ViewController:self)
-                       
+                        PresentHomeViewController(myViewController:self)
+
                          }
-                        
+
                     catch {
                         print("An Error Done When Convert Data Success")
                         UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(response.result.value)")
                     }
-                }else if(response.response?.statusCode == 400) {
-                    print("Home Cooker doesn’t support this deliveryPlace")
-                    myLoader.hideCustomLoader()
-                    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Home Cooker doesn’t support this deliveryPlace")
-                }else if(response.response?.statusCode == 403) {
-                    print("Order’s cooker is the only one who can accept or finish the order")
-                    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(response.result.value)")
-                  myLoader.hideCustomLoader()
-                }else if(response.response?.statusCode == 422) {
-                    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(response.result.value)")
-                    print(response.result.value)
-                  myLoader.hideCustomLoader()
-                }else if(response.response?.statusCode == 404) {
-                    print("RESPONSE 1 \(response.result.value)")
+                } else if ( response.response?.statusCode == 422) {
+                    do{
+                        if let result = response.result.value {
+                            let json = result as! [String: Any]
+                            if let predictionArray = json["error"] as? [[String: Any]],
+                                let firstPrediction = predictionArray.first {
+                                print(firstPrediction)
+                                Alert.showAlert(title: "Error".localized(), message: firstPrediction["msg"] as! String)
+                                
+                            }
+                            print(json)
+                        }
+                        
+                   
+                          }catch{}
                     
-                   myLoader.hideCustomLoader()
-                    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(response.result.value)")
+                }else{
+                    do{
+                       
+                        
+                        let json = try  JSON(data: response.data!)
+                        Alert.showAlert(title: "Error".localized(), message: json["error"].string!)
+                        
+                        myLoader.hideCustomLoader()
+                    }catch{}
                     
                 }
-                
-                
+
+
             case .failure(let error):
                myLoader.hideCustomLoader()
                 break
@@ -355,7 +563,83 @@ extension AddorderHomeCooker {
     
     
     
+    ///choose calender and time
+    @objc func MovetoCalender(){
+        var alert = UIAlertView(title: "Select Date ".localize(), message: "", delegate: self, cancelButtonTitle: "Ok".localize())
+        alert.tag = 1
+        picker = UIDatePicker(frame: CGRect(x: 10, y: alert.bounds.size.height, width: 300, height: 200))
+        picker.locale = Locale(identifier:Localize.currentLanguage()) as Locale!
+        picker.datePickerMode = .date
+        picker.minimumDate = Date()
+        alert.addSubview(picker)
+        alert.bounds = CGRect(x: 0, y: 0, width: 320 + 20, height: alert.bounds.size.height + 216 + 20)
+        alert.setValue(picker, forKey: "accessoryView")
+        alert.delegate = self
+        alert.show()
+        
+        
+    }
     
+    @objc  func MovetoTime(){
+        var alert = UIAlertView(title: "Select Time".localize(), message: "", delegate: self, cancelButtonTitle: "Ok".localize())
+        alert.tag = 2
+        picker = UIDatePicker(frame: CGRect(x: 10, y: alert.bounds.size.height, width: 300, height: 200))
+        picker.locale = Locale(identifier:Localize.currentLanguage()) as Locale!
+        picker.datePickerMode = .time
+        picker.minimumDate = Date()
+        alert.addSubview(picker)
+        alert.bounds = CGRect(x: 0, y: 0, width: 320 + 20, height: alert.bounds.size.height + 216 + 20)
+        alert.setValue(picker, forKey: "accessoryView")
+        alert.delegate = self
+        alert.show()
+        
+        
+    }
+    
+    func combineDateWithTime(date: Date, time: Date) -> Date? {
+        let calendar = NSCalendar.current
+        
+        let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: time)
+        
+        var mergedComponments = DateComponents()
+        mergedComponments.year = dateComponents.year!
+        mergedComponments.month = dateComponents.month!
+        mergedComponments.day = dateComponents.day!
+        mergedComponments.hour = timeComponents.hour!
+        mergedComponments.minute = timeComponents.minute!
+        mergedComponments.second = timeComponents.second!
+        
+        return calendar.date(from: mergedComponments)
+    }
+    
+    
+    func alertView(_ alertView: UIAlertView, clickedButtonAt buttonIndex: Int) {
+      
+        if(alertView.tag == 1){
+            
+            let dateformatter = DateFormatter()
+            dateformatter.dateStyle = DateFormatter.Style.long
+            dateformatter.timeStyle = DateFormatter.Style.none
+            let now = dateformatter.string(from: picker.date)
+            DateValue.text=String( describing: now)
+            mydate = picker.date
+            
+            print(mydate)
+        }else{
+            
+            let dateformatter = DateFormatter()
+            dateformatter.dateStyle = DateFormatter.Style.none
+            dateformatter.timeStyle = DateFormatter.Style.medium
+            let now = dateformatter.string(from: picker.date)
+            TimeValue.text=String( describing: now)
+            mytime = picker.date
+            print(mytime)
+            
+            
+        }
+    }
+
     
 
     
@@ -363,6 +647,30 @@ extension AddorderHomeCooker {
     
     
   
+    
+    
+}
+
+
+extension AddorderHomeCooker : Addcredit  , PresentpopUpcredite {
+    func presentPupupCredite() {
+        PushPopcredite()
+    }
+    
+    func AddCrediteFunc() {
+        var vc = CreditCardVC()
+        vc.ispopup = true
+        vc.delegte = self
+        self.navigationController?.pushViewController(vc, animated: false)
+    }
+    
+    func SendOrderfuc() {
+        if (type == "food-cars" || type == "restaurant-owners" ) {
+            RequsestSendOrder(Type:type)
+        }else{
+            GetAllPlacesOfHmeCoker(id: Productesdata[0].owner.id, type: type)
+        }
+    }
     
     
 }

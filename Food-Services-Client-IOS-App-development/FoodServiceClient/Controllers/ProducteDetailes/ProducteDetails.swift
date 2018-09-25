@@ -26,7 +26,7 @@ class ProducteDetails: UIViewController , UIGestureRecognizerDelegate{
         super.viewDidLoad()
      self.navigationController?.navigationBar.tintColor = .white
         setupNavigationBar()
-        self.navigationItem.backBarButtonItem?.title = "Back".localized()
+//        self.navigationItem.backBarButtonItem?.title = "Back".localized()
        
         if let name = datadetailes.name {
              self.title = name
@@ -57,6 +57,13 @@ class ProducteDetails: UIViewController , UIGestureRecognizerDelegate{
         }
         
      }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
        // print(" show btn == \(UserDefaults.standard.integer(forKey: ShowMore))")
         if(self.isMovingFromParentViewController){

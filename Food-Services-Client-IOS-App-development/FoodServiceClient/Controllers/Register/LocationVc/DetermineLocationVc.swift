@@ -12,7 +12,7 @@ import CoreLocation
 import Material
 import GooglePlaces
 import GoogleMaps
-
+import Localize_Swift
 class DetermineLocationVc: UIViewController
 {
     var didSetupConstraints = false
@@ -20,6 +20,7 @@ class DetermineLocationVc: UIViewController
     var currentLocation:CLLocation?
     var locationManager = CLLocationManager()
     lazy var repo = UserRepository()
+    var registerRepo = GetallProdacteRepo()
     //    var userType: String?
     var Isedite = false
     let logo: UIImageView = {
@@ -49,7 +50,7 @@ class DetermineLocationVc: UIViewController
         label.numberOfLines = 0
         label.textColor = UIColor.init(hex: "4695a5")
         label.text = "press long to determine workplace site".localized()
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.font = UIFont.appFontBold(ofSize: 14)
         label.textAlignment = .center
         
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -61,7 +62,7 @@ class DetermineLocationVc: UIViewController
         
         let button = Button.appButton()
         button.setTitle("Continue register".localized(),  for: .normal)
-        
+        button.titleLabel?.font = UIFont.appFontRegular(ofSize: 16)
         return button
     }()
     
@@ -80,6 +81,12 @@ class DetermineLocationVc: UIViewController
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         if self.currentLocation != nil {
             self.selectedLat     =  Float((self.currentLocation?.coordinate.latitude)!)
@@ -89,15 +96,30 @@ class DetermineLocationVc: UIViewController
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        continueRegisterButton.sizeToFit()
+        continueRegisterButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
+        
+    }
     
     
     func configerMap() {
-        mapView.delegate = self
+        
 //        locationManager.delegate = self
 //        locationManager.desiredAccuracy = kCLLocationAccuracyBest
 //        locationManager.requestLocation()
 //        locationManager.startUpdatingLocation()
 //        locationManager.requestWhenInUseAuthorization()
+        
+        //configurelocation manger
+        locationManager = CLLocationManager()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestAlwaysAuthorization()
+        locationManager.distanceFilter = 50
+        locationManager.startUpdatingLocation()
+        locationManager.delegate = self
+        mapView.delegate = self
         
         
     }
@@ -111,7 +133,7 @@ class DetermineLocationVc: UIViewController
     
     // helper method
     func centerMapOnLocation(latitude:Float, longitude:Float) {
-        let camera = GMSCameraPosition.camera(withLatitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude), zoom: 6.0)
+        let camera = GMSCameraPosition.camera(withLatitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude), zoom: 12.0)
         self.mapView.camera = camera
         let marker = GMSMarker()
         marker.position = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
@@ -123,7 +145,7 @@ class DetermineLocationVc: UIViewController
     //MARK:- this function for setting google map info
     
     func setMap(For lat:Float ,long:Float) {
-        let camera = GMSCameraPosition.camera(withLatitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(long), zoom: 6.0)
+        let camera = GMSCameraPosition.camera(withLatitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(long), zoom: 12.0)
         self.mapView.camera = camera
         let marker = GMSMarker()
         marker.position = CLLocationCoordinate2D(latitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(long))
@@ -143,20 +165,83 @@ extension DetermineLocationVc
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
 
         if let selectLat = self.selectedLat , let selectLong = self.selectedLong {
-            repo.determineLocation(id: Singeleton.userId!, lat: Double(selectLat), lan: Double(selectLong), onSuccess: { (response, statusCode) in
+            repo.determineLocation(id: (Singeleton.userInfo?.id)!, lat: Double(selectLat), lan: Double(selectLong), onSuccess: { (response, statusCode) in
                 
                 Loader.hideLoader()
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                let vc = CreditCardVc ()
-                self.navigationController?.pushViewController(vc, animated: true)
-
+//                let vc = CreditCardVc ()
+//                self.navigationController?.pushViewController(vc, animated: true)
+                
+                Singeleton.userDefaults.set(true, forKey: defaultsKey.isLogged.rawValue)
+                
+               // Singeleton.userDefaults.set(response?.token, forKey: defaultsKey.token.rawValue)
+                Singeleton.userDefaults.set(response?.user.id, forKey: defaultsKey.userId.rawValue)
+                Singeleton.userDefaults.set(response?.user.toJSON(), forKey: defaultsKey.userData.rawValue)
+                Singeleton.userDefaults.set(response?.user.name, forKey: defaultsKey.userName.rawValue)
+                Singeleton.userDefaults.set(response?.user.phone, forKey: defaultsKey.userPhone.rawValue)
+                Singeleton.userDefaults.set(response?.user.email, forKey: defaultsKey.userEmail.rawValue)
+                Singeleton.userDefaults.set(response?.user.toJSON(), forKey: defaultsKey.userData.rawValue)
+                
+                print(Singeleton.userInfo?.toJSON())
+                
+                
+                
+                Loader.showLoader()
+                self.registerRepo.submitCreditCard(token: String(describing: ""),  completion: { (responsecard) in
+                    print(responsecard)
+                    Singeleton.userDefaults.set(true, forKey: defaultsKey.isLogged.rawValue)
+                   AppDelegate.instance.changeIntialViewController()
+//                    let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+//                    let homeController : HomeVC = storyboard.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
+//                    let sideMenuViewController = SideMenuViewController()
+//                    let appToolbarController = AppToolbarController(rootViewController: homeController)
+//                    appToolbarController.mytitle="Home".localize()
+//                    let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, leftViewController: sideMenuViewController)
+//
+//                    self.addUserToFireBase((Singeleton.userInfo?.id)!)
+//
+//                    self.navigationController?.pushViewController(viewController, animated: true)
+                    Loader.hideLoader()
+                })
+                
+                
+                
+                
+//
+//                let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+//                let homeController : HomeVC = storyboard.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
+//                let sideMenuViewController = SideMenuViewController()
+//                let appToolbarController = AppToolbarController(rootViewController: homeController)
+//                appToolbarController.mytitle="Home".localize()
+//                if Localize.currentLanguage() == "en"
+//                {
+//                    if self.Isedite {
+//                        self.motionDismissViewController()
+//                    }else{
+//                        let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, leftViewController: sideMenuViewController)
+//                        viewController.isHiddenStatusBarEnabled = false
+//                        self.navigationController?.pushViewController(viewController, animated: true)
+//                    }
+//
+//
+//                }
+//                else
+//                {
+//                    if self.Isedite {
+//                        self.motionDismissViewController()
+//                    }else{
+//                        let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, rightViewController: sideMenuViewController)
+//                        viewController.isHiddenStatusBarEnabled = false
+//                        self.navigationController?.pushViewController(viewController, animated: true)
+//                    }
+//                }
                 
             }, onFailure: { (errorResponse, statusCode) in
                 
                 Loader.hideLoader()
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                let errorMessage = errorResponse?.error[0].msg
-                DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorMessage!)
+               // let errorMessage = errorResponse?.error[0].msg
+                DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorResponse!)
 
             })
             
@@ -228,6 +313,13 @@ extension DetermineLocationVc: CLLocationManagerDelegate {
         let camera = GMSCameraPosition.camera(withLatitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude, zoom: 13.0)
         self.mapView.animate(to: camera)
         
+    }
+    
+    func addUserToFireBase(_ userId: Int) {
+        
+        let ref = userRef.child("\(userId)").child("details")
+        let userData = UserDefaults.standard.object(forKey: defaultsKey.userData.rawValue) as? [String: Any]
+        ref.updateChildValues(userData!)
     }
     
     

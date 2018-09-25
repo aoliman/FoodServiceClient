@@ -150,8 +150,8 @@ extension VerifyCodeForgetPasswordVC
             }, onFailure: { (error, statuscode) in
                 Loader.hideLoader()
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                let errorMessage = error?.error[0].msg
-                DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorMessage!)
+               // let errorMessage = error?.error[0].msg
+                DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: error!)
 
             })
         }

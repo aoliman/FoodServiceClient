@@ -28,9 +28,9 @@ class OrderDetailesSatuse: UIViewController {
     }
     
     @IBOutlet weak var pageControl: FSPageControl!
+    var Getallproducterepo = GetallProdacteRepo()
     
-    
-    
+     let orderrepo = OrderRepository()
     
     
     
@@ -39,24 +39,53 @@ class OrderDetailesSatuse: UIViewController {
         
         self.navigationController?.navigationBar.tintColor = .white
         setupNavigationBar()
-        self.navigationItem.backBarButtonItem?.title = "Back".localized()
+//        self.navigationItem.backBarButtonItem?.title = "Back".localized()
         Tableviewtopconstrain.constant = self.view.layer.frame.height*22/100
         
 
         TableviewDetailes.delegate = self
         TableviewDetailes.dataSource = self
-        if orderItem.productOrders != nil {
-        for producte in orderItem.productOrders{
-            if producte.product.imgs[0] != nil {
-                imagesString.append(producte.product.imgs[0])
-                
-            }
-            }}
-        SetPagerViewImage()
-        PagerViewImages.reloadData()
+       // Setup()
+       
+    }
+  
+    
+    func Setup(){
+        
+        myLoader.showCustomLoaderview(uiview: self.view)
+        orderrepo.getSingleOrder(orderId: orderItem.id! , stauts: "", userId: (Singeleton.userInfo?.id)!, onSuccess: { (response)  in
+            
+          print(response)
+            self.orderItem = response
+             self.imagesString.removeAll()
+            if self.orderItem.productOrders != nil {
+                for producte in self.orderItem.productOrders{
+                    if producte.product.imgs[0] != nil {
+                        
+                        self.imagesString.append(producte.product.imgs[0])
+                        
+                    }
+                }}
+            self.SetPagerViewImage()
+            self.PagerViewImages.reloadData()
+            self.TableviewDetailes.reloadData()
+             myLoader.hideCustomLoader()
+            
+             }, onFailure: { (error, statuscode) in
+            DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "NoInternet".localized())
+        })
     }
 
-   
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+        Setup()
+       
+        
+        
+    }
 
   
 
@@ -115,16 +144,16 @@ extension OrderDetailesSatuse :UITableViewDelegate ,UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if orderItem.kind == "delivery-guy-order" {
+        print(orderItem)
+        
+        
             return orderItem.productOrders.count+2
 
-        }else{
-            return orderItem.productOrders.count+2
-
-        }
+       
         
         
     }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
@@ -132,7 +161,7 @@ extension OrderDetailesSatuse :UITableViewDelegate ,UITableViewDataSource {
         if(indexPath.row == 0){
           let cell : OrderSatutsNumber = TableviewDetailes.dequeueReusableCell(withIdentifier: "OrderSatutsNumber", for: indexPath) as! OrderSatutsNumber
             cell.OrderNumberValue.text = "#\(orderItem.id!)".localize()
-             cell.OrderStatusValue.text = "\(orderItem.status!)".localize()
+             cell.OrderStatusValue.text = "  \("\(orderItem.status!)".localize())"
             switch orderItem.status {
             case "PENDING":
                 
@@ -185,8 +214,8 @@ extension OrderDetailesSatuse :UITableViewDelegate ,UITableViewDataSource {
             return cell
         } else if(indexPath.row == orderItem.productOrders.count+1){
             let cell : orderClientNamecell = TableviewDetailes.dequeueReusableCell(withIdentifier: "orderClientNamecell", for: indexPath) as! orderClientNamecell
-            if let name = orderItem.client.name {
-              cell.ClientNameValue.text = orderItem.client.name!
+            if let name = orderItem.cooker.name {
+              cell.ClientNameValue.text = orderItem.cooker.name!
             }
             if let individualsCount = orderItem.individualsCount {
                 cell.NumberofcustesValue.text = "\(orderItem.individualsCount!) \("Guest".localize())"
@@ -230,7 +259,30 @@ extension OrderDetailesSatuse :UITableViewDelegate ,UITableViewDataSource {
                 
                 cell.GetDiraction.addTarget(self, action: #selector(GetDirection), for: .touchUpInside)
                 cell.GetdeliveryGuy.addTarget(self, action: #selector(GetDeliveryGuy), for: .touchUpInside)
-            }else{
+            }
+//            else if orderItem.status == OrderStatus.arrived.rawValue && orderItem.cooker.type  != "PARTY_COOKER"{
+//
+//                cell.DeliveredBtn.isHidden = true
+//                cell.ViewBtnHieight.isHidden = false
+//                cell.GetDiraction.isHidden = false
+//                cell.GetdeliveryGuy.isHidden = false
+//                cell.DeliveredBtn.titleLabel?.text = "Finished".localize()
+//                cell.DeliveredBtn.addTarget(self, action: #selector(SendStatutoPartycooker), for: .touchUpInside)
+//
+//
+//
+//
+//
+//                 }
+            else if orderItem.status == OrderStatus.arrived.rawValue && orderItem.cooker.type  == "PARTY_COOKER"{
+                
+                cell.DeliveredBtn.isHidden = false
+                cell.ViewBtnHieight.isHidden = false
+                cell.GetDiraction.isHidden = true
+                cell.GetdeliveryGuy.isHidden = true
+                cell.DeliveredBtn.titleLabel?.text = "Finished".localize()
+                cell.DeliveredBtn.addTarget(self, action: #selector(SendStatutoPartycooker), for: .touchUpInside)
+                }else{
                 
                 
                 
@@ -254,7 +306,7 @@ extension OrderDetailesSatuse :UITableViewDelegate ,UITableViewDataSource {
             }
            
             if  orderItem.productOrders[indexPath.row-1].product.price != nil && orderItem.productOrders[indexPath.row-1].count != nil {
-               cell.priceValue.text = "\(orderItem.productOrders[indexPath.row-1].count*orderItem.productOrders[indexPath.row-1].product.price) \("Riyal".localize())"
+               cell.priceValue.text = "\(Float (orderItem.productOrders[indexPath.row-1].count)*orderItem.productOrders[indexPath.row-1].product.price) \("Riyal".localize())"
             }
            
             
@@ -289,7 +341,25 @@ extension OrderDetailesSatuse :UITableViewDelegate ,UITableViewDataSource {
     }
     
     
-    
+    @objc func SendStatutoPartycooker(){
+        var   profiletype = ""
+        switch orderItem.cooker.type {
+        case "HOME_COOKER":profiletype="home-cookers"
+        case "PARTY_COOKER":profiletype="party-cookers"
+        case "FOOD_CAR":profiletype="food-cars"
+        case "RESTAURANT_OWNER":profiletype="restaurant-owners"
+        default : break
+            
+        }
+        
+        Getallproducterepo.SendOrderStatus(Orderid: orderItem.id , clientid: orderItem.cooker.id , Status: "FINISHED", type:profiletype) { [weak  self](successresponse) in
+            print("Send Success \(successresponse)")
+            let cell :orderClientNamecell = self!.TableviewDetailes.cellForRow(at: IndexPath(item: self!.orderItem.productOrders.count+1, section: 0)) as!  orderClientNamecell
+                cell.DeliveredBtn.backgroundColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
+                cell.DeliveredBtn.isHidden = true
+            
+        }
+    }
     
     
    

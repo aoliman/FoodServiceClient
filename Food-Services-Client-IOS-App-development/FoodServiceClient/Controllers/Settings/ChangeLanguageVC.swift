@@ -89,6 +89,14 @@ class ChangeLanguageVC: UIViewController {
         arabicLabel.tag = 1
         // Do any additional setup after loading the view.
     }
+    
+    
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        setupNavigationBar()
+//        self.navigationController?.navigationBar.tintColor = .white
+//    }
+    
 
     
     func addSubView() {

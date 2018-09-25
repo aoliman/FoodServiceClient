@@ -49,6 +49,11 @@ var delegate : Mydatedelgate?
     func minimumDate(for calendar: FSCalendar) -> Date {
         return Date()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
    
     
 }

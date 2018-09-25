@@ -13,8 +13,11 @@ import Moya_Gloss
 import Toast_Swift
 import GoogleMaps
 import GooglePlaces
+import RxSwift
+import RxCocoa
 class  GetallProdacteRepo  {
 private var provider :MoyaProvider<ProductService>!
+    var IsSend = BehaviorRelay<Bool>(value: false)
     init() {
         let endpointClosure = { (target: ProductService) -> Endpoint<ProductService> in
             let defaultEndpoint = MoyaProvider.defaultEndpointMapping(for: target)
@@ -48,8 +51,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Producte not found")
+                    } else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -103,12 +107,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        //                    let respnseapisucess = try response.mapArray(HomeCookerPlacemodel.self)
-                        //
-                        //                    completionSuccess (respnseapisucess)
-                        
-                        print("Producte not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -156,8 +157,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Producte not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -170,6 +172,7 @@ private var provider :MoyaProvider<ProductService>!
                
                 
             }
+             cancellabelArry.append(cancellabel)
             
         } else {
             DataUtlis.data.noInternetDialog()
@@ -201,8 +204,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Owner not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -245,8 +249,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Product not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -291,15 +296,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 400) {
-                        print("Home Cooker doesn’t support this deliveryPlace")
-                    }else if(response.statusCode == 403) {
-                        print("Order’s cooker is the only one who can accept or finish the order")
-                    }else if(response.statusCode == 422) {
-                        print(response)
-                    }else if(response.statusCode == 404) {
-                        UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Unauthorized")
-                        print("Unauthorized")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -345,8 +344,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Producte not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -396,20 +396,10 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 400) {
-                        print("Home Cooker doesn’t support this deliveryPlace")
-                    }else if(response.statusCode == 403) {
-                        print("Order’s cooker is the only one who can accept or finish the order")
-                    }else if(response.statusCode == 422) {
-                        print(String(data: response.data , encoding: String.Encoding.utf8) )
-                        print(result.value?.data)
-                        print(result.value?.request)
-                        print(result.value?.response)
-                    }else if(response.statusCode == 404) {
-                        UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Unauthorized")
-                        print(result.value?.data)
-                        print(result.value?.request)
-                        print(result.value?.response)
+                    }else  {
+                        do{try print(response.mapJSON())}catch{}
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -454,8 +444,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Producte not found")
+                  }else  {
+                    Alert.showError(response)
+                    myLoader.hideCustomLoader()
                     }
                     
                     
@@ -526,8 +517,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Product not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -579,8 +571,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -613,9 +606,13 @@ private var provider :MoyaProvider<ProductService>!
                     
                 case .success(let response):
                     print(response.statusCode)
-                    print(response.data)
+                   
+                    do{
+                        try  print(response.mapJSON())
+                    }catch{}
                     if(response.statusCode == 200){
                         do {
+                            
                             let respnseapisucess = try response.mapObject(DeliveryRes.self)
                             completionSuccess (respnseapisucess)
                         }
@@ -623,8 +620,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Producte not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -673,8 +671,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Producte not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -704,7 +703,7 @@ private var provider :MoyaProvider<ProductService>!
     func SendOrderRate(orderid :Int, rate :Int , clientid:Int ,completionSuccess: @escaping (Any) -> ()){
         if DataUtlis.data.isInternetAvailable() {
             //Load View Show
-           // Loader.showLoader()
+           
            
             provider.request(.SendOrderRate(Orderid: orderid , Rate: rate, clientid: clientid)  ) { (result)  in
                 switch result {
@@ -726,10 +725,9 @@ private var provider :MoyaProvider<ProductService>!
                             completionSuccess (result)
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        
-                    }else{
-                        print(response.statusCode  )
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -783,17 +781,12 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        do{
-                            let respnseapisucess = try response.mapArray(ErrorResponse.self) as! ErrorResponse
-                            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(respnseapisucess.error[0])")
-                        }
-                        catch{
-                            
-                        }
-                        
-                        
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
+                        
+                    
                     
                     
                     
@@ -847,16 +840,9 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        do{
-                            let respnseapisucess = try response.mapArray(ErrorResponse.self) as! ErrorResponse
-                            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(respnseapisucess.error[0])")
-                        }
-                        catch{
-                            
-                        }
-                        
-                        
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -908,26 +894,11 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 400) {
-                        do{
-                            let respnseapisucess = try response.mapArray(ErrorResponse.self) as! ErrorResponse
-                            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(respnseapisucess.error[0])")
-                        }
-                        catch{
-                            
-                        }
-                        
-                        
-                    } else if(response.statusCode == 422) {
-                        do{
-                            let respnseapisucess = try response.mapArray(ErrorResponse.self) as! ErrorResponse
-                            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("\(respnseapisucess.error[0])")
-                        }
-                        catch{
-                            
-                        }
-                        
-                        
+                    }else  {
+                        self.IsSend.accept(true)
+//                        UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please Choose Location ".localize())
+                       Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
                     
                     
@@ -951,6 +922,7 @@ private var provider :MoyaProvider<ProductService>!
     
     //get all gatogary function
     func GetCatogary(page :Int ,limit :Int ,type :String,lat :Double , long :Double ,radius :Int ,completionSuccess: @escaping (Catogary) -> ()){
+        
         if DataUtlis.data.isInternetAvailable() {
             print(" page :\(page) ,limit :\(limit) ,type :\(type)")
             // Loader.showLoader()
@@ -978,13 +950,11 @@ private var provider :MoyaProvider<ProductService>!
                         catch {
                             print("An Error Done When Convert Data Success")
                         }
-                    }else if(response.statusCode == 404) {
-                        print("Producte not found")
+                    }else  {
+                        Alert.showError(response)
+                        myLoader.hideCustomLoader()
                     }
-                    
-                    
-                    
-                case .failure(let responseError):
+                  case .failure(let responseError):
                     
                     print("staste code =\(responseError.response?.statusCode)")
                     print("error "+responseError.errorDescription!)
@@ -1007,8 +977,247 @@ private var provider :MoyaProvider<ProductService>!
     
     
     
+    func submitCreditCard(token: String, completion: @escaping (User) -> ()) {
+        
+        
+        let cancelLabel = provider.request(.creditCardInfo(id: (Singeleton.userInfo?.id)!, token: token)) {
+            result in
+            switch result {
+            case .success(let response):
+                do {
+                    
+                     print(response.statusCode)
+                    do {
+                        try print(response.mapJSON())
+                    }
+                    switch response.statusCode {
+                    case StatusCode.complete.rawValue:
+                        let response =  try response.mapObject(RegisterApi.self)
+                        print(response)
+                        completion(response.user)
+                        myLoader.hideCustomLoader()
+                        myLoader.hideCustomLoader()
+                        
+                    default:
+                        let errorResponse =  try response.mapObject(APIError.self)
+                        
+                        var error = errorResponse.error
+                        
+                        error = (error != nil ) ? error : errorResponse.generalError![0].msg
+                        
+
+                        
+                        
+                            Alert.showError(response)
+                            myLoader.hideCustomLoader()
+                        //Alert.showAlert(title: "Error".localized(), message: error!)
+//                        print(response.statusCode, "Undefined error")
+                    }
+                    
+                } catch {
+                    DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "Something went wrong".localized())
+                    myLoader.hideCustomLoader()
+                }
+                
+            case .failure(_):
+                DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "NoInternet".localized())
+                myLoader.hideCustomLoader()
+            }
+        }
+        
+    }
     
     
+    
+    
+    
+    func AddPayment(Paymenttoken: String, completion: @escaping (PaymentData) -> (),Sendempety: @escaping (Bool) -> ()) {
+        
+        
+        let cancelLabel = provider.request(.AddPayment(paymenttoken: Paymenttoken)) {
+            result in
+            switch result {
+            case .success(let response):
+                do {
+                   print(response.statusCode)
+                   
+                    
+                    switch response.statusCode {
+                    case StatusCode.complete.rawValue:
+                        let response =  try response.mapObject(PaymentData.self)
+                        print(response)
+                        completion(response)
+                        myLoader.hideCustomLoader()
+                        myLoader.hideCustomLoader()
+                        myLoader.hideCustomLoader()
+                   
+                    case 400:
+                        Sendempety(true)
+                        myLoader.hideCustomLoader()
+                        myLoader.hideCustomLoader()
+                        myLoader.hideCustomLoader()
+                    case 500:
+                        do {
+                            print(response.statusCode)
+                            try print(response.mapJSON())
+                            DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "Something went wrong".localized())
+                            myLoader.hideCustomLoader()
+                            myLoader.hideCustomLoader()
+                        }
+                    default:
+                     
+                            Alert.showError(response)
+                            myLoader.hideCustomLoader()
+                         myLoader.hideCustomLoader()
+                         myLoader.hideCustomLoader()
+                        
+                    }
+                    
+                } catch {
+                    DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "Something went wrong".localized())
+                    myLoader.hideCustomLoader()
+                    myLoader.hideCustomLoader()
+                }
+                
+            case .failure(_):
+                DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "NoInternet".localized())
+                 myLoader.hideCustomLoader()
+                myLoader.hideCustomLoader()
+              
+            }
+        }
+        
+    }
+    
+   
+    
+    
+    func GetMyPayment( completion: @escaping ([PaymentData]) -> (),Sendempety: @escaping (Bool) -> ()) {
+        
+        
+        let cancelLabel = provider.request(.GetMyPayment()) {
+            result in
+            switch result {
+            case .success(let response):
+                do {
+                    print(response.statusCode)
+                    do {
+                        try print(response.mapJSON())
+                    }
+                    
+                    switch response.statusCode {
+                    case StatusCode.complete.rawValue:
+                        let response =  try response.mapArray(PaymentData.self)
+                        print(response)
+                        completion(response)
+                        
+                    case 400:
+                        Sendempety(true)
+                    default:
+                       
+                            Alert.showError(response)
+                            myLoader.hideCustomLoader()
+                        
+                    }
+                    
+                } catch {
+                    DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "Something went wrong".localized())
+                    myLoader.hideCustomLoader()
+                }
+                
+            case .failure(_):
+                DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "NoInternet".localized())
+                myLoader.hideCustomLoader()
+                
+            }
+        }
+        
+    }
+    
+    
+    func SetdefultePayment(paymentid:String, completion: @escaping (Bool) -> ()) {
+        
+        
+        let cancelLabel = provider.request(.SetdefultePayment(paymentid:paymentid )) {
+            result in
+            switch result {
+            case .success(let response):
+                do {
+                    print(response.statusCode)
+                    do {
+                        try print(response.mapJSON())
+                    }
+                    
+                    switch response.statusCode {
+                    case StatusCode.complete.rawValue:
+                        
+                        print(response)
+                        completion(true)
+                        
+                    
+                    default:
+                       
+                            Alert.showError(response)
+                            myLoader.hideCustomLoader()
+                        
+                    }
+                    
+                } catch {
+                   completion(true)
+                    myLoader.hideCustomLoader()
+                }
+                
+            case .failure(_):
+                DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "NoInternet".localized())
+                myLoader.hideCustomLoader()
+                
+            }
+        }
+        
+    }
+    
+    
+    
+    func DeletePayment(paymentid:String, completion: @escaping (Bool) -> ()) {
+        
+        
+        let cancelLabel = provider.request(.DeletePayment(paymentid: paymentid)) {
+            result in
+            switch result {
+            case .success(let response):
+                do {
+                    print(response.statusCode)
+                    do {
+                        try print(response.mapJSON())
+                    }
+                    
+                    switch response.statusCode {
+                    case StatusCode.complete.rawValue:
+                        
+                        print(response)
+                        completion(true)
+                        
+                        
+                    default:
+                        
+                            Alert.showError(response)
+                            myLoader.hideCustomLoader()
+                        
+                    }
+                    
+                } catch {
+                    completion(true)
+                    myLoader.hideCustomLoader()
+                }
+                
+            case .failure(_):
+                DataUtlis.data.WarningDialog(Title: "FailedTitle".localized(), Body: "NoInternet".localized())
+                myLoader.hideCustomLoader()
+                
+            }
+        }
+        
+    }
     
     
     

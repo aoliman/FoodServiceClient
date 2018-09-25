@@ -40,6 +40,11 @@ class GetAllProducteAndFilter: UIViewController {
          
         
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
     override func viewWillDisappear(_ animated: Bool) {
         
         
@@ -48,9 +53,7 @@ class GetAllProducteAndFilter: UIViewController {
         print("type now ----- \(UserDefaults.standard.integer(forKey: Type))")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-       
-    }
+   
     
     @IBAction func BtnLeftClicked(_ sender: Any) {
         LeftClicked()

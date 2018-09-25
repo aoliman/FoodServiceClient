@@ -6,6 +6,7 @@ PODS:
   - Cosmos (14.0.0)
   - Crashlytics (3.9.3):
     - Fabric (~> 1.7.2)
+  - CreditCardForm (0.1.7)
   - Differentiator (3.0.2)
   - DropDown (2.3.1)
   - DynamicBlurView (2.0.2)
@@ -98,6 +99,7 @@ PODS:
   - Kingfisher (4.6.1)
   - leveldb-library (1.20)
   - Localize-Swift (2.0.0)
+  - LTHRadioButton (1.2.0)
   - Material (2.13.5):
     - Material/Core (= 2.13.5)
   - Material/Core (2.13.5):
@@ -512,6 +514,7 @@ PODS:
   - Socket.IO-Client-Swift (13.1.1):
     - Starscream (~> 3.0.2)
   - Starscream (3.0.4)
+  - Stripe (12.0.1)
   - SwiftIcons (2.0.1)
   - SwiftMessages (4.1.0)
   - SwiftyJSON (4.0.0)
@@ -524,6 +527,7 @@ DEPENDENCIES:
   - BEMCheckBox
   - Cosmos
   - Crashlytics
+  - CreditCardForm
   - DropDown
   - Fabric
   - Firebase/Auth
@@ -542,6 +546,7 @@ DEPENDENCIES:
   - JSQMessagesViewController
   - Kingfisher
   - Localize-Swift
+  - LTHRadioButton
   - Material
   - MaterialComponents
   - Moya
@@ -560,6 +565,7 @@ DEPENDENCIES:
   - SkyFloatingLabelTextField
   - SnapKit
   - Socket.IO-Client-Swift
+  - Stripe
   - SwiftIcons (~> 2.0.1)
   - SwiftMessages
   - SwiftyJSON
@@ -572,6 +578,7 @@ SPEC CHECKSUMS:
   BEMCheckBox: 5ba6e37ade3d3657b36caecc35c8b75c6c2b1a4e
   Cosmos: 6dd44b65d587033e690ae1c350c875d262a23fda
   Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
+  CreditCardForm: 66f0ce5a12182000a457d56f5630049efd3432df
   Differentiator: a87be69eba49ec4ab460c7671143ee3a9eececfd
   DropDown: 20499c7b2731b0d21609af924e47c7677a2be50d
   DynamicBlurView: aa6db4defc6e537eb86fc5e58dd3991666178399
@@ -601,6 +608,7 @@ SPEC CHECKSUMS:
   Kingfisher: 1f9157d9c02b380cbd0b7cc890161195164eb634
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   Localize-Swift: c798ec9286494866f7068f85f7c71283ac5bdab4
+  LTHRadioButton: bcd4b49a8e0af81b5140e67583a868d96e956557
   Material: ced3fd11882147b135f897ca20227174bb104ad0
   MaterialComponents: 974b52899fb90f28da0284790be46b2ca82358f5
   MDFInternationalization: e355b0cebecf53d60233bd267084e49366c82513
@@ -628,12 +636,13 @@ SPEC CHECKSUMS:
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
   Socket.IO-Client-Swift: f22222913f29801e30ae0df712db663ec096edc2
   Starscream: f5da93fe6984c77b694366bf7299b7dc63a76f26
+  Stripe: 373d5266ae98d0c4f81eb620f670ec71b3874694
   SwiftIcons: e475a56ae2c2da40672dbf16061ca5dd5cee7dbb
   SwiftMessages: 1bacc783c8f10bdfdc57c14860cae8a1f1fa6591
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
   Toast-Swift: ba0b01b095aada709d915f9beb1d38184a2721c3
   Toucan: 61867fb10948c02e9804280a95eb183e98eac97a
 
-PODFILE CHECKSUM: 9edb8d40e8e72ce1aba07d4a918ce26f0fae0fd7
+PODFILE CHECKSUM: 2b0f700fd0f9b367c6cf7324c72478079799ea85
 
 COCOAPODS: 1.4.0

@@ -18,39 +18,18 @@ class ChatListViewController: UIViewController {
     lazy var chatRepo = ChatRepo()
    
     let userId = (Singeleton.userInfo?.id)!
-
-    var setOnlineSwitch: UISwitch = {
-        let switchBtn = UISwitch()
-        switchBtn.onTintColor =  UIColor.navigationBarColor()
-        switchBtn.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-
-        switchBtn.translatesAutoresizingMaskIntoConstraints = false
-        return switchBtn
-    }()
+    
     
     lazy var Control: UIRefreshControl = {
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(finishRefresh), for: UIControlEvents.valueChanged)
-        return refreshControl
-    }()
-    
-    var onlineStatus = Bool()
-   
-    
-    var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Chat list".localized()
-        label.textColor = UIColor.navigationBarColor()
-        label.font = UIFont.appFont(ofSize: 14)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
         
-        return label
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector( finishRefresh), for: UIControlEvents.valueChanged)
+        return refreshControl
+        
     }()
     
     var tableView = UITableView()
     
-    // variables used in firebase
     var members:  [String] = []
     var membersInfo: [String: Any] = [:]
     var chatMembers: [User] = []
@@ -68,16 +47,16 @@ class ChatListViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ChatListTableViewCell.self, forCellReuseIdentifier: chatCellIdentifier)
-        setOnlineSwitch.addTarget(self, action: #selector(changeOnlineStatus), for: .valueChanged)
         updateViewConstraints()
         self.tableView.separatorStyle = .none
         
         if #available(iOS 10.0, *) {
             tableView.refreshControl = Control
         } else {
-            // Fallback on earlier versions
+            
         }
-        Control.tintColor = UIColor.appColor()
+       
+        
         
     }
     
@@ -86,7 +65,6 @@ class ChatListViewController: UIViewController {
         chatMembers.removeAll()
         lastMessages.removeAll()
         getChatMembers()
-
     }
     
     override func didReceiveMemoryWarning() {
@@ -95,13 +73,9 @@ class ChatListViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        
-        onlineStatus = UserDefaults.standard.bool(forKey: defaultsKey.onlineStatus.rawValue)
-        setOnlineSwitch.setOn(onlineStatus, animated: true)
+    
         self.navigationDrawerController?.title = " "
-
         getChatMembers()
-
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -136,22 +110,30 @@ extension ChatListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         let cell = cell as? ChatListTableViewCell
-        if chatMembers.count > 0 {
+        if chatMembers.count > 0 && lastMessages.count > 0 {
             
             //check if unseen messages exist
             if userConersation[indexPath.row].unSeenCount > 0 {
-//                cell?.backgroundColor = UIColor(red:0.75, green:0.75, blue:0.75, alpha:0.3)
-                cell?.backgroundColor = UIColor.navigationBarColor().withAlphaComponent(0.1)
-                cell?.numberOfUnreadMessages.text = String(userConersation[indexPath.row].unSeenCount)
+                cell?.backgroundColor = #colorLiteral(red: 0.9607002139, green: 0.9608381391, blue: 0.9606701732, alpha: 1)
+                cell?.numberOfUnreadMessages.isHidden = false
+                cell?.numberOfUnreadMessages.text = "+" + String(userConersation[indexPath.row].unSeenCount)
+                cell?.lastMessageLabel.font = UIFont.appFontBold(ofSize: 14)
+                cell?.lastMessageLabel.textColor = .black
+                cell?.lastMessageTimeLabel.textColor = .black
             } else {
                 cell?.backgroundColor = .clear
+                cell?.numberOfUnreadMessages.isHidden = true
                 cell?.numberOfUnreadMessages.text = ""
+                cell?.lastMessageLabel.font = UIFont.appFont(ofSize: 14)
+                cell?.lastMessageLabel.textColor = .lightGray
+                cell?.lastMessageTimeLabel.textColor = .lightGray
             }
-            
+          
+            cell?.lastMessageTimeLabel.text = getDateAsString(lastMessages[indexPath.row].createdAt)
+
             if let lastMessage = lastMessages[indexPath.row].text {
                 if lastMessage.isEmpty {
                     cell?.lastMessageLabel.text = ""
-
                 } else {
                     cell?.lastMessageLabel.text = lastMessages[indexPath.row].text
                 }
@@ -179,7 +161,6 @@ extension ChatListViewController: UITableViewDelegate, UITableViewDataSource {
                     } else {
                         cell?.userImage.image = #imageLiteral(resourceName: "profile").circle
                     }
-                    
                 })
             } else {
                 cell?.userImage.image = #imageLiteral(resourceName: "profile").circle
@@ -188,7 +169,7 @@ extension ChatListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
+        return 90
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -196,8 +177,11 @@ extension ChatListViewController: UITableViewDelegate, UITableViewDataSource {
         let chatViewContoller = ChatViewController()
         chatViewContoller.receiver = self.chatMembers[indexPath.row]
         chatViewContoller.conversationId = self.userConersation[indexPath.row].conversationId
-      
+        self.navigationItem.backButton.titleColor = .white
+        self.navigationItem.backButton.tintColor = .white
+        self.navigationDrawerController?.title = "".localized()
         self.navigationController?.pushViewController(chatViewContoller, animated: true)
+        
     }
     
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
@@ -212,7 +196,8 @@ extension ChatListViewController: UITableViewDelegate, UITableViewDataSource {
 extension ChatListViewController {
     
     func getChatMembers() {
-
+        myLoader.showCustomLoaderview(uiview: self.view)
+        myLoader.showCustomLoaderview(uiview: self.view)
         userRef.child("\(userId)").child("conversations").queryOrdered(byChild: "lastMessageTime")
                     .observe(.value, with: {
                         
@@ -228,22 +213,21 @@ extension ChatListViewController {
                                     
                                     let snap = childSnap as! DataSnapshot
                                     if UsersConversation(snap: snap).conversationId != "" {
-                                        self?.getLastMessage(UsersConversation(snap: snap).conversationId)
+                                        self?.getLastMessage(UsersConversation(snap: snap).conversationId , snap.key)
                                         self?.userConersation.append(UsersConversation(snap: snap))
                                         let id = snap.key
                                         self?.getMemberDetails(id)
                                         self?.members.append(snap.key)
                                     }
                                 }
-                              
-                                
-                                self?.tableView.reloadData()
+                          //      self?.tableView.reloadData()
                             } else {
-                                print("eeee")
+                                self?.tableView.isHidden = true
+                                UIViewController.nothingLabel.text = "No members".localized()
+                                self?.addNothingAvailableLabel()
+                                myLoader.hideCustomLoader()
+                                myLoader.hideCustomLoader()
                         }
-                        
-                       
-                    
         })
         
         let members = userRef.child("\(userId)").child("conversations").queryOrdered(byChild: "lastMessageTime")
@@ -258,146 +242,65 @@ extension ChatListViewController {
                 let userSnapshot = snapshot.value as? [String: Any]
                 let user = User(json: userSnapshot!)!
                 
-                for (index, member) in (self?.chatMembers.enumerated())! {
+                if let chatMembers = self?.chatMembers.enumerated() {
                     
-                    if member.id == user.id {
-                        self?.chatMembers[index] = user
-                        self?.tableView.reloadData()
-                        return
+                    for (index, member) in chatMembers {
+                        if member.id == user.id {
+                            self?.chatMembers[index] = user
+                            self?.tableView.reloadData()
+                            return
+                        }
                     }
-                    
                 }
                 
                 self?.chatMembers.append(user)
-                
                 self?.tableView.reloadData()
             } else {
-                print("eeee")
+                print("error")
             }
             
             if self?.chatMembers.count == 0 {
                 self?.tableView.isHidden = true
                 UIViewController.nothingLabel.text = "No members".localized()
                 self?.addNothingAvailableLabel()
+                myLoader.hideCustomLoader()
+                myLoader.hideCustomLoader()
             } else {
-                self?.tableView.reloadData()
+           //     self?.tableView.reloadData()
                 self?.tableView.isHidden = false
                 UIViewController.nothingLabel.text = ""
                 self?.removeNothingLabel()
             }
+            myLoader.hideCustomLoader()
+            myLoader.hideCustomLoader()
         })
-
     }
     
-    func getLastMessage(_ conversationId: String){
-        
-        lastMessages.removeAll()
+    func getLastMessage( _ conversationId: String, _  id: String){
         
         if conversationId != "" {
-            
             conversationsRef.child(conversationId).child("lastMessage").observeSingleEvent(of: DataEventType.value, with: {[weak self] (snapshot) in
                 
-                self?.lastMessages.append(FirebaseMessages(snap: snapshot))
+                if self?.lastMessages.count == self?.members.count {
+                    
+                    if let chatMembers = self?.members.enumerated() {
+                        
+                        for (index, member) in chatMembers {
+                            if member == id {
+                                self?.lastMessages[index] = FirebaseMessages(snap: snapshot)
+                              //  self?.tableView.reloadData()
+                                return
+                            }
+                        }
+                    }
+                } else {
+                    self?.lastMessages.append(FirebaseMessages(snap: snapshot))
+                }
+                
+                
                 
             })
         }
-        
+       // self.tableView.reloadData()
     }
-    
-    @objc func changeOnlineStatus() {
-        
-        chatRepo.getOnlineStatus(online: setOnlineSwitch.isOn) { (statusCode) in
-            switch statusCode {
-                case StatusCode.complete.rawValue , StatusCode.success.rawValue, StatusCode.undocumented.rawValue:
-                    UserDefaults.standard.set(self.setOnlineSwitch.isOn, forKey: defaultsKey.onlineStatus.rawValue)
-                    self.setOnlineSwitch.setOn(self.setOnlineSwitch.isOn, animated: true)
-                    self.updateOnlineStatusInFirebase(self.setOnlineSwitch.isOn)
-                
-                case StatusCode.badRequest.rawValue:
-                    DataUtlis.data.ErrorDialog(Title: "Error".localized(), Body: "badRequest")
-                    
-                case StatusCode.unauthorized.rawValue:
-                    DataUtlis.data.ErrorDialog(Title: "Error".localized(), Body: "unauthenticated")
-                    
-                case StatusCode.forbidden.rawValue:
-                    DataUtlis.data.ErrorDialog(Title: "Error".localized(), Body: "forbidden")
-                    
-                case StatusCode.notFound.rawValue:
-                    DataUtlis.data.ErrorDialog(Title: "Error".localized(), Body: "not Found")
-                    
-                    
-                case StatusCode.unprocessableEntity.rawValue:
-                    DataUtlis.data.ErrorDialog(Title: "Error".localized(), Body: "not Found")
-                    
-                case StatusCode.serverError.rawValue :
-                    DataUtlis.data.ErrorDialog(Title: "Error".localized(), Body: "ServrError".localized())
-                    
-                default:
-                    DataUtlis.data.noInternetDialog()
-                
-
-            }
-            
-            
-           
-        }
-    }
-    
-    func updateOnlineStatusInFirebase(_ status: Bool) {
-        
-        let ref = userRef.child("\(userId)").child("details")
-        
-        let online = [
-            "online": status,
-            
-            ] as [String : Any]
-        
-        ref.updateChildValues(online)
-    }
-    
-    
-//    func observeChannels(clientID: Int, providerID: Int, indexPath: IndexPath)
-//    {
-//        chatRef.child("client\(clientID)provider\(providerID)").child("lastMessage").observe(.value, with: { (snapshot) in
-//                if let LastMessage = snapshot.value as? [String:Any]
-//                {
-//                    let cell = self.tableView.cellForRow(at: indexPath) as? ChatListTableViewCell
-//                    let message = LastMessage["message"] as? String
-//                    cell?.lastMessageLabel.text = message
-//
-//
-//                } else {
-//                    print("Error! Could not decode channel data")
-//
-//                }
-//
-//            })
-//    }
-//
-  
-//
-//    func fetchUnseenCount(clientID: Int, providerID: Int, indexPath: IndexPath)
-//    {
-//        chatRef.child("client\(clientID)provider\(providerID)").child("provider\(providerID)")
-//            .observe(.value, with:
-//                {
-//                    (snapshot) in
-//                    if let client = snapshot.value as? [String:Any]
-//                    {
-//                        let cell = self.tableView.cellForRow(at: indexPath) as? ChatListTableViewCell
-//                        let message = client["unseenCount"] as? Int
-//                        if message! > 0
-//                        {
-//                            cell?.backgroundColor = UIColor(red:0.75, green:0.75, blue:0.75, alpha:0.3)
-//                            cell?.numberOfUnreadMessages.text = "(" + String(message!) + ")"
-//                        }
-//                    }
-//                    else
-//                    {
-//                        print("Error! Could not decode channel data")
-//                    }
-//            })
-//    }
-//
-   
 }

@@ -23,7 +23,7 @@ class HomeVC: UIViewController  {
     var isNewDataLoading=false
     var listofcatogary : [DataCatogary] = []
     var loaddata=0
-    var limit = 40
+    var limit = 10
     var page = 1
     var pageCount = 2
     var totalCount = 0
@@ -32,16 +32,16 @@ class HomeVC: UIViewController  {
     //location manger
     var mylocation = CLLocation()
     var locationmaanager = CLLocationManager()
-    var type = "party-cookers"
-    var raduis = 1000000000
+    var type = "home-cookers"
+    var refreshcontrol = UIRefreshControl()
+    var isrefresh =  false
     override func viewDidLoad() {
         super.viewDidLoad()
-       
-     print("loaction \(locationmaanager.location)")
-         mylocation = locationmaanager.location!
+      print( getUserAuthKey() )
+     print(getUserId())
         
         
-        SetupViews()
+        print(self.navigationController?.viewControllers)
         
         // set language
         //firsed load
@@ -86,7 +86,17 @@ class HomeVC: UIViewController  {
             
         }
 
-        
+        SetupViews()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loaddata=0
+        isNewDataLoading=false
+        listofcatogary  = []
+        limit = 10
+        page = 1
+        pageCount = 2
+     self.DidtapInCatogary(type:self.type)
     }
    
     func SetupViews(){
@@ -126,16 +136,34 @@ class HomeVC: UIViewController  {
         MapBtn.layer.cornerRadius = MapBtn.layer.frame.width/2
         ViewBtnAndImg.layer.cornerRadius = MapBtn.layer.frame.width/2
         self.ContentView.bringSubview(toFront: MapBtn)
+        if #available(iOS 10.0, *) {
+            TableProducte.refreshControl = refreshcontrol
+        } else {
+            TableProducte.addSubview(refreshcontrol)
+        }
+        refreshcontrol.addTarget(self, action: #selector(RefreshMyorder), for: .valueChanged)
+        
     }
    
     
-    
+   
     
     
     
     //map btn action to apper map contrroller
     
-    
+    @objc func RefreshMyorder(){
+        loaddata=0
+        isNewDataLoading=false
+        listofcatogary  = []
+        limit = 10
+        page = 1
+        pageCount = 2
+        isrefresh = true
+       self.TableProducte.reloadData()
+       DidtapInCatogary(type: type )
+       
+    }
     
     
     
@@ -145,6 +173,7 @@ class HomeVC: UIViewController  {
         print("btn")
         let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
         let mapcontroller : MapController = storyboard.instantiateViewController(withIdentifier: "MapController") as! MapController
+    self.setupNavigationBar()
           self.navigationController?.pushViewController(mapcontroller, animated: false)
         
     }
@@ -155,7 +184,7 @@ class HomeVC: UIViewController  {
          super.viewWillLayoutSubviews()
        
        
-         self.GetCatoGary(page: self.page, limit: self.limit, type: self.type, lat: self.mylocation.coordinate.latitude, long: self.mylocation.coordinate.longitude, radius: self.raduis)
+        
         MapBtn.layer.cornerRadius = MapBtn.layer.frame.width/2
         ViewBtnAndImg.layer.cornerRadius = MapBtn.layer.frame.width/2
     }
@@ -186,9 +215,12 @@ extension HomeVC : UICollectionViewDelegate , UICollectionViewDataSource {
         }
         if let rate = self.listofcatogary[indexPath.row].rating{
               // Show only fully filled stars
+            cell.RateView.settings.starSize = Double(cell.layer.frame.width/9)
+              cell.RateView.settings.starMargin = cell.RateView.settings.starSize/3
+            cell.RateView.settings.updateOnTouch = false
             cell.RateView.rating = Double(rate)
                 cell.RateView.settings.fillMode = .precise
-            cell.RateView.text=String(rate)
+           
         }
       
         
@@ -217,7 +249,7 @@ extension HomeVC : UICollectionViewDelegate , UICollectionViewDataSource {
 
 extension HomeVC {
 func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-    
+    if !isrefresh {
     if scrollView == TableProducte {
         
         if ((scrollView.contentOffset.y + scrollView.frame.size.height)-10 >= scrollView.contentSize.height)
@@ -225,7 +257,7 @@ func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate deceler
             if !isNewDataLoading{
                 
               
-                self.GetCatoGary(page: self.page, limit: self.limit, type: self.type, lat: self.mylocation.coordinate.latitude, long: self.mylocation.coordinate.longitude, radius: self.raduis)
+                self.GetCatoGary(page: self.page, limit: self.limit, type: self.type, lat: self.mylocation.coordinate.latitude, long: self.mylocation.coordinate.longitude, radius: raduis)
                 
                 
                 isNewDataLoading = true
@@ -234,12 +266,15 @@ func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate deceler
             }
             isNewDataLoading=false
         }
-    }}
+    }
+    }
+    
+    }
 
     
     //get catogary
     func GetCatoGary(page :Int ,limit :Int ,type :String,lat :Double , long :Double ,radius :Int){
-        
+        CancelAllrequsst()
         if(page>pageCount){
             print("here \(self.page)  > \(self.pageCount)")
             return
@@ -250,22 +285,85 @@ func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate deceler
          myLoader.activityindecator.bringSubview(toFront: MapBtn)
       
         Getallproducterepo.GetCatogary(page: page, limit: limit, type: type, lat: lat, long: long, radius: radius) { (catogary) in
-            for onedata in catogary.data  {
-              self.listofcatogary.append(onedata)
-            }
-            print("resulte in func  \(self.listofcatogary)")
-            print("resulte in catogary \(catogary)")
-            self.TableProducte.reloadData()
-            myLoader.hideCustomLoader()
+          
+            
+            
+            
+//            if response.data.count == 0
+//            {
+//                self.collectionView.isHidden = true
+//                self.statusButton.isHidden = true
+//                self.addNothingAvailableLabel()
+//                UIViewController.nothingLabel.text = "No Orders Available".localized()
+//            }
+//            else
+//            {
+//                self.collectionView.isHidden = false
+//                self.statusButton.isHidden = false
+//
+//                self.totalCount = response.totalCount
+//
+//                self.orderItems.append(contentsOf: response.data)
+//
+//                self.collectionView.reloadData()
+//            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             if(self.type == "food-cars"){
-                self.page=page+1
+                self.loaddata=0
+                self.isNewDataLoading=false
+                self.listofcatogary  = []
+                self.limit = 10
+                self.page = 1
+                self.pageCount = 2
             }else{
                 self.page=page+1
                 self.pageCount = catogary.pageCount
                 print("page counte \(self.pageCount)  page \(self.page)"  )
             }
+            for onedata in catogary.data  {
+                self.listofcatogary.append(onedata)
+            }
             
+            print("resulte in func  \(self.listofcatogary)")
+            print("resulte in catogary \(catogary)")
+            self.TableProducte.reloadData()
             myLoader.hideCustomLoader()
+            
+            self.refreshcontrol.endRefreshing()
+            myLoader.hideCustomLoader()
+            self.isrefresh = false
+            if( catogary.data.count == 0){
+             self.TableProducte.isHidden = true
+            self.addNothingAvailableLabel()
+                switch self.type   {
+                case "food-cars" :
+                UIViewController.nothingLabel.text = "No Food Car Available".localized()
+                break
+                case "party-cookers" :
+                    UIViewController.nothingLabel.text = "No Party Cooker Available".localized()
+                    break
+                case "home-cookers" :
+                    UIViewController.nothingLabel.text = "No Home cooker Available".localized()
+                    break
+                case "restaurant-owners" :
+                    UIViewController.nothingLabel.text = "No Resturant Available".localized()
+                    break
+                default: break
+                    
+                }
+            }else{
+                self.removeNothingLabel()
+                 self.TableProducte.isHidden = false
+            }
             
         }
         
@@ -281,7 +379,8 @@ func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate deceler
         limit = 10
         page = 1
         pageCount = 2
-        self.GetCatoGary(page: self.page, limit: self.limit, type: self.type, lat: self.mylocation.coordinate.latitude, long: self.mylocation.coordinate.longitude, radius: self.raduis)
+        self.TableProducte.reloadData()
+        self.GetCatoGary(page: self.page, limit: self.limit, type: self.type, lat: self.mylocation.coordinate.latitude, long: self.mylocation.coordinate.longitude, radius: raduis)
         self.TableProducte.reloadData()
         print(listofcatogary)
     }
@@ -298,8 +397,8 @@ extension HomeVC: CLLocationManagerDelegate {
         let location: CLLocation = locations.last!
         print("Location: \(location)")
         mylocation=locations[0]
-        
-        
+        locationmaanager.stopUpdatingLocation()
+        self.GetCatoGary(page: self.page, limit: self.limit, type: self.type, lat: self.mylocation.coordinate.latitude, long: self.mylocation.coordinate.longitude, radius: raduis)
         
     }
     

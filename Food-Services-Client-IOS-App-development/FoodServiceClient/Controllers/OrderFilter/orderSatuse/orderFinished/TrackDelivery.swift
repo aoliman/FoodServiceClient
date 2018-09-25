@@ -39,7 +39,7 @@ class TrackDelivery: UIViewController {
     var Getallproducterepo = GetallProdacteRepo()
     
     
-    var  raduis=10000
+    
     let foodcarmapmarker = 1
     let resturantmapmarker = 2
     var getallproducterepo = GetallProdacteRepo()
@@ -49,7 +49,7 @@ class TrackDelivery: UIViewController {
     
    
     var timer:Timer = Timer()
-    var deliveryMarkers:[GMSMarker]=[]
+    var deliveryMarker:GMSMarker!
     
     var polylines:[GMSPolyline]=[]
     var mymarker:GMSMarker!
@@ -58,21 +58,62 @@ class TrackDelivery: UIViewController {
     
     
     var  socket:SocketIOClient!
+    let socketmanger = SocketManager(socketURL: URL(string: "http://67.205.139.227")!, config: [.log(true), .compress])
+    
 
-   
-    let socketmanger = SocketManager(socketURL: URL(string: "http://165.227.96.25/locations")!, config: [.log(true), .compress])
-
+    
+    var first = false
+    var deliverylocation:CLLocation!
+    var coordinate:CLLocationCoordinate2D!
+    var status :String!
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+      status  = orderItem.status
         
         setupNavigationBar()
         self.navigationController?.navigationBar.tintColor = .white
         
-        self.navigationItem.backBarButtonItem?.title = "Back".localized()
+//        self.navigationItem.backBarButtonItem?.title = "Back".localized()
         
         
+            configmap()
+            
+            self.customViewDelivery = Bundle.main.loadNibNamed("DeliveryTrackPopupview", owner: self, options: nil)![0] as! DeliveryTarckpopup
+
+            self.customViewDelivery.frame = CGRect(x: 0, y: self.view.layer.frame.height, width: self.view.layer.frame.width, height: self.view.layer.frame.height*50/100)
+
+            self.view.addSubview(self.customViewDelivery)
+        
+       
+
+        
+        
+
+        
+        
+        
+        
+        
+    
+        
+        
+    }
+    
+//    deinit {
+//
+//    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        DisconnectSocket()
+        
+    }
+    func configmap(){
         //configurelocation manger
         locationmaanager = CLLocationManager()
         locationmaanager.desiredAccuracy = kCLLocationAccuracyBest
@@ -90,94 +131,192 @@ class TrackDelivery: UIViewController {
         mapView.settings.zoomGestures = true
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         // mapView.isMyLocationEnabled = true
-        mylocation = locationmaanager.location!
+        if (locationmaanager.location != nil) {
+            mylocation = locationmaanager.location!
+        }
+        
         // Add the map to the view, hide it until we've got a location update.
         myview.addSubview(mapView)
         mapView.isHidden = true
         mapView.delegate=self
-        mylocation = locationmaanager.location!
-       
-
         
-            
+        
+        
+        
         DeliveryGuyLocation = orderItem.deliveryGuy
-            // is  get delivery  guy
-            self.title = "Order Location".localize()
-            self.navigationController?.navigationBar.tintColor = .white
-//            AddHomeorDeliveryplaceMarker(allmarks: [CLLocationCoordinate2D(latitude:Double(orderItem.cooker.location.lat) , longitude: Double(orderItem.cooker.location.lng))], locationid: -1)
+        // is  get delivery  guy
+        self.title = "Order Location".localize()
+        self.navigationController?.navigationBar.tintColor = .white
         
-            AddHomeorDeliveryplaceMarker(allmarks: [CLLocationCoordinate2D(latitude:Double(mylocation.coordinate.latitude) , longitude: Double(mylocation.coordinate.longitude))], locationid: -2)
+        //            AddHomeorDeliveryplaceMarker(allmarks: [CLLocationCoordinate2D(latitude:Double(orderItem.cooker.location.lat) , longitude: Double(orderItem.cooker.location.lng))], locationid: -1)
+        
+        AddHomeorDeliveryplaceMarker(allmarks: [CLLocationCoordinate2D(latitude:Double(orderItem.toLocation[1]) , longitude: Double(orderItem.toLocation[0]))], locationid: -2)
+        self.showmark.append(CLLocationCoordinate2D(latitude:Double(orderItem.toLocation[1]) , longitude: Double(orderItem.toLocation[0])))
+        
+        
+//        AddAllDeliveryGuyMarker(allmarks:[CLLocationCoordinate2D(latitude:Double(DeliveryGuyLocation.location.lat ) , longitude: Double(DeliveryGuyLocation.location.lng))] , locationid: 0)
+        
+        
+        
+        
+       
+        
+        
+        
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if self.orderItem.status == DeliveryGuyOrderStatus.arrived.rawValue{
+//            socket =  socketmanger.socket(forNamespace: "/locations")
+//            configsocketio(id: String(orderItem.deliveryGuy.id))
             
-        AddAllDeliveryGuyMarker(allmarks:[CLLocationCoordinate2D(latitude:Double(DeliveryGuyLocation.location.lat ) , longitude: Double(DeliveryGuyLocation.location.lng))] , locationid: 0)
-        
-        
-        
-        
-        drawPath(startLocation:CLLocation(latitude: Double(DeliveryGuyLocation.location.lat ), longitude: Double(DeliveryGuyLocation.location.lng)) , endLocation: mylocation)
-        
+             AppearMapView(myindex: 0)
             
-            self.customViewDelivery = Bundle.main.loadNibNamed("DeliveryTrackPopupview", owner: self, options: nil)![0] as! DeliveryTarckpopup
-
-            self.customViewDelivery.frame = CGRect(x: 0, y: self.view.layer.frame.height, width: self.view.layer.frame.width, height: self.view.layer.frame.height*50/100)
-
-            self.view.addSubview(self.customViewDelivery)
-        
+        }else if self.orderItem.status == DeliveryGuyOrderStatus.onTheWay.rawValue{
+            socket =  socketmanger.socket(forNamespace: "/locations")
+            configsocketio(id: String(orderItem.deliveryGuy.id))
             
             
-     print("socker")
-    configsocketio(id: String(orderItem.deliveryGuy.id))
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        }else if self.orderItem.status == DeliveryGuyOrderStatus.delivered.rawValue{
+            
+            AppearMapView(myindex: 0)
+            
+        }
+        self.customViewDelivery.ProfileImage.layer.cornerRadius  = self.customViewDelivery.ProfileImage.layer.frame.height/2
         
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
-        timer.invalidate()
+        
+        DisconnectSocket()
     }
     
     
     func configsocketio(id:String){
-        socket  = socketmanger.defaultSocket
+        
+        print(socket.nsp)
+        
+       
         socket.on(clientEvent: .connect) { (data, ack) in
-            print(ack.expected)
+            print(ack)
             print(data)
             self.TrackId(id: id)
             
         }
         socket.on(clientEvent: .reconnect) { (data, ack) in
-            print(ack.expected)
+            print(ack)
              print(data)
             self.TrackId(id: id)
             
         }
         socket.on("locationUpdate") { (data, Ack) in
-            print(Ack)
-            print(data)
+           
+             self.showmark = []
+            self.showmark.append(CLLocationCoordinate2D(latitude:Double(self.orderItem.toLocation[1]) , longitude: Double(self.orderItem.toLocation[0])))
+           
+            let query = String(describing: data)
+            let regex = try! NSRegularExpression(pattern:"\"(.*?)\"", options: [])
+            var results = [String]()
+            
+            regex.enumerateMatches(in: query, options: [], range: NSMakeRange(0, query.utf16.count)) { result, flags, stop in
+                if let r = result?.range(at: 1), let range = Range(r, in: query) {
+                    results.append(String(query[range]))
+                }
+            }
+            
+       
+            //lng
+             //lat
+            self.deliverylocation = CLLocation(latitude: Double(results[0].replacingOccurrences(of: "\"", with: ""))!, longitude:  Double(results[1].replacingOccurrences(of: "\"", with: ""))!)
+            
+            self.coordinate = CLLocationCoordinate2D(latitude: Double(results[0].replacingOccurrences(of: "\"", with: ""))!, longitude: Double(results[1].replacingOccurrences(of: "\"", with: ""))!)
+            
+            if self.first == false {
+                
+                self.drawPath2(startLocation:self.deliverylocation , endLocation: CLLocation(latitude: Double(self.orderItem.toLocation[1]), longitude: Double(self.orderItem.toLocation[0])))
+                
+
+                
+            }
+            else {
+                if (self.deliveryMarker == nil || self.coordinate == nil){
+                    return
+                }
+//                print(self.coordinate)
+//                CATransaction.begin()
+//                CATransaction.setAnimationDuration(3.0)
+//                self.deliveryMarker.position =  self.coordinate
+//                CATransaction.commit()
+//
+//               self.showmark.append(self.coordinate)
+//
+//                self.showAllMarkers(marke: self.showmark)
+//
+//                let bounds = GMSCoordinateBounds(coordinate: self.coordinate , coordinate:CLLocationCoordinate2D(latitude:Double(self.orderItem.toLocation[1]) , longitude: Double(self.orderItem.toLocation[0])) )
+//
+//                let update = GMSCameraUpdate.fit(bounds, withPadding: 200.0)
+//
+//                self.mapView.moveCamera(update)
+                self.updateMarker(coordinates: self.coordinate, degrees: 10.0, duration: 5)
+                
+            }
+            
+            
+            
         }
+        
         
         
      socket.connect()
     }
+    
+    
+    func updateMarker(coordinates: CLLocationCoordinate2D, degrees: CLLocationDegrees, duration: Double) {
+        // Keep Rotation Short
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0.5)
+        deliveryMarker.rotation = degrees
+        CATransaction.commit()
+        
+        // Movement
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(duration)
+        deliveryMarker.position = coordinates
+        
+        let bounds = GMSCoordinateBounds(coordinate: self.coordinate , coordinate:CLLocationCoordinate2D(latitude:Double(self.orderItem.toLocation[1]) , longitude: Double(self.orderItem.toLocation[0])) )
+        
+                        let update = GMSCameraUpdate.fit(bounds, withPadding: 50.0)
+        
+                        self.mapView.moveCamera(update)
+        
+        
+        // Center Map View
+//        let camera = GMSCameraUpdate.setTarget(coordinates)
+//        mapView.animate(with: camera)
+        
+        CATransaction.commit()
+        
+    }
+    
     func DisconnectSocket(){
-    socket.emit("untrack");
-    socket.disconnect()
+//    socket.emit("untrack");
+//    socketmanger.reconnects = false
+//    socket.disconnect()
     }
+    
     func TrackId(id:String){
-        let JsonTrack = ["id",id]
-      socket.emit("track", with: JsonTrack)
+        var JsonTrack = ["id":id]
+      socket.emit("track", with: [JsonTrack])
     }
+    
+    
+    
+    
+    
+    
+    
   
     
   
@@ -185,24 +324,67 @@ class TrackDelivery: UIViewController {
     @objc func AppearMapView(myindex:Int){
         
         UIView.animate(withDuration: 3) {
+            if self.orderItem.status == DeliveryGuyOrderStatus.arrived.rawValue{
+                self.customViewDelivery.OrderStatusValue.textColor = colorArrived
+            }else if self.orderItem.status == DeliveryGuyOrderStatus.onTheWay.rawValue{
+                self.customViewDelivery.OrderStatusValue.textColor = colorOnTheWay
+            }else if self.orderItem.status == DeliveryGuyOrderStatus.delivered.rawValue{
+                self.customViewDelivery.OrderStatusValue.textColor = colorDelivered
+            }
         self.customViewDelivery.OrderNumberLabel.text = "Order Number".localize()
-        self.customViewDelivery.OrderNumberValue.text = ": # \(self.orderItem.id!)"
+        self.customViewDelivery.OrderNumberValue.text = " # \(self.orderItem.id!)"
         self.customViewDelivery.OrderStatusLabel.text = "Order Status".localize()
-        self.customViewDelivery.OrderStatusValue.text = ": \(self.orderItem.status!)"
+        self.customViewDelivery.OrderStatusValue.text = " \((self.orderItem.status!).localize())"
             self.customViewDelivery.OrderDetailes.text = "\("Order Details".localize()) :"
          
-       // self.customViewDelivery.NameValue.text = ": \(self.orderItem.deliveryGuy.name)"
+        self.customViewDelivery.NameValue.text = "\(self.orderItem.deliveryGuy.name!)"
         self.customViewDelivery.RateView.settings.updateOnTouch = false
-         // self.customViewDelivery.RateView.rating = self.orderItem.deliveryGuy.rating
+         self.customViewDelivery.RateView.rating = self.orderItem.deliveryGuy.rating
          self.customViewDelivery.Totaldistanselabel.text = "Total Distance".localize()
             self.customViewDelivery.TotaldistanseValue.text = "\(self.orderItem.km!) \("Km".localize())"
          self.customViewDelivery.AddressLabel.text = "Address".localize()
-          //  self.customViewDelivery.AdressValue.text = "\(self.orderItem.deliveryGuy.address) "
+          self.customViewDelivery.AdressValue.text = "\(self.orderItem.deliveryGuy.address!) "
             
-            
+            if let image = self.orderItem.deliveryGuy.profileImg {
+             self.customViewDelivery.ProfileImage.af_setImage(withURL: URL(string: image )!)
+             
+            }
             
             self.customViewDelivery.Totalchargelabel.text = "Total Charge".localize()
-            self.customViewDelivery.AdressValue.text = "\(self.orderItem.price!) \("Riyal".localize()) "
+            if let price = self.orderItem.price {
+                self.customViewDelivery.totalChargeValue.text = "\(self.orderItem.price!) \("Riyal".localize()) "
+            }else if let price = self.orderItem.price {
+                self.customViewDelivery.totalChargeValue.text = "\(self.orderItem.price!) \("Riyal".localize()) "
+            }
+            
+            if self.orderItem.status == DeliveryGuyOrderStatus.onTheWay.rawValue {
+                self.customViewDelivery.BtnDeliverd.isHidden = true
+            }else  if self.orderItem.status == DeliveryGuyOrderStatus.arrived.rawValue{
+                self.customViewDelivery.BtnDeliverd.isHidden = false
+                 self.customViewDelivery.BtnDeliverd.setTitle("Deliverd".localize(), for: .normal)
+                // send status deliverd
+                self.customViewDelivery.BtnDeliverd.addTarget(self, action: #selector(self.SendBtnAction), for: .touchUpInside)
+            }else  if self.orderItem.status == DeliveryGuyOrderStatus.delivered.rawValue{
+                if self.orderItem.rated == true {
+                    self.customViewDelivery.BtnDeliverd.isHidden = true
+                }else{
+                    
+//                    if(self.status == "DELIVERED"){
+//                        self.customViewDelivery.BtnDeliverd.isHidden = false
+//
+//                        self.customViewDelivery.BtnDeliverd.setTitle("Rate".localize(), for: .normal)
+//                        // send status rate
+//                        self.customViewDelivery.BtnDeliverd.addTarget(self, action: #selector(self.SendBtnAction), for: .touchUpInside)
+//                    }
+                    self.customViewDelivery.BtnDeliverd.isHidden = false
+                  
+                   self.customViewDelivery.BtnDeliverd.setTitle("Rate".localize(), for: .normal)
+                // send status rate
+                    self.customViewDelivery.BtnDeliverd.addTarget(self, action: #selector(self.SendBtnAction), for: .touchUpInside)
+                    
+                }
+                
+            }
             
             
             
@@ -217,6 +399,73 @@ class TrackDelivery: UIViewController {
             
             
         }
+    
+    @objc func SendBtnAction(){
+        self.customViewDelivery.BtnDeliverd.setTitle("Rate".localize(), for: .normal)
+        if status == DeliveryGuyOrderStatus.arrived.rawValue {
+           
+            
+
+            
+            Getallproducterepo.SendOrderStatus(Orderid: orderItem.id , clientid: orderItem.deliveryGuy.id , Status: "DELIVERED", type:"delivery-guys") {
+                (successresponse) in
+                print("Send Success \(successresponse)")
+                self.orderItem.status = "DELIVERED"
+                self.status = "DELIVERED"
+                self.customViewDelivery.BtnDeliverd.isHidden = true
+                self.DissAppearMapView()
+                
+                self.customViewDelivery = nil
+                
+                self.customViewDelivery = Bundle.main.loadNibNamed("DeliveryTrackPopupview", owner: self, options: nil)![0] as! DeliveryTarckpopup
+                self.customViewDelivery.frame = CGRect(x: 0, y: self.view.layer.frame.height, width: self.view.layer.frame.width, height: self.view.layer.frame.height*50/100)
+                
+                self.view.addSubview(self.customViewDelivery)
+                self.AppearMapView(myindex: 0)
+                self.customViewDelivery.BtnDeliverd.setTitle("Rate".localize(), for: .normal)
+                self.customViewDelivery.BtnDeliverd.isHidden = false
+                
+            
+                
+//                                self.customViewDelivery.BtnDeliverd.setTitle("Rate".localize(), for: .normal)
+//                                self.customViewDelivery.BtnDeliverd.isHidden = false
+//                                self.customViewDelivery.BtnDeliverd.setTitle("Rate".localize(), for: .normal)
+//
+//                                 self.customViewDelivery.BtnDeliverd.titleLabel?.text = "Rate".localize()
+                
+                }
+            
+        }else{
+            let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            let passController : PopupRate = storyboard.instantiateViewController(withIdentifier: "PopupRate") as! PopupRate
+            
+            passController.modalPresentationStyle = .custom
+            passController.modalTransitionStyle = .crossDissolve
+            
+            print(orderItem?.id!)
+            print(orderItem?.toJSON())
+            if( orderItem?.kind! == "delivery-guy-order" ){
+                passController.isDeliveryguyorder = true
+                passController.OrderId = orderItem?.id!
+                passController.clientid = orderItem?.client.id!
+                passController.OrderOwner = orderItem?.order!
+            }else{
+                passController.clientid = orderItem?.client.id!
+                passController.isDeliveryguyorder = false
+                passController.OrderId = orderItem?.id!
+                
+            }
+            // passController.OrderOwner = orderDetails?.order!
+            passController.delegate = self
+            present(passController, animated: true, completion: nil)
+            
+            
+            
+            
+            
+        }
+    }
+    
         
         
     
@@ -225,15 +474,43 @@ class TrackDelivery: UIViewController {
     
     
     @objc func DissAppearMapView(){
-        UIView.animate(withDuration: 0.7, delay: 0.0, options: UIViewAnimationOptions.curveLinear, animations: {
-          
+        
+        
+        
+        if self.orderItem.status == DeliveryGuyOrderStatus.arrived.rawValue{
+            UIView.animate(withDuration: 0.7, delay: 0.0, options: UIViewAnimationOptions.curveLinear, animations: {
+                
                 
                 self.customViewDelivery.frame = CGRect(x: 0, y: self.view.layer.frame.height, width: self.view.layer.frame.width, height: self.view.layer.frame.height*50/100)
                 
-          
+                
+                
+                
+            }, completion: nil)
             
             
-        }, completion: nil)
+        }else if self.orderItem.status == DeliveryGuyOrderStatus.onTheWay.rawValue{
+            UIView.animate(withDuration: 0.7, delay: 0.0, options: UIViewAnimationOptions.curveLinear, animations: {
+                
+                
+                self.customViewDelivery.frame = CGRect(x: 0, y: self.view.layer.frame.height, width: self.view.layer.frame.width, height: self.view.layer.frame.height*50/100)
+                
+                
+                
+                
+            }, completion: nil)
+            
+            
+        }else if self.orderItem.status == DeliveryGuyOrderStatus.delivered.rawValue{
+            
+           
+            
+        }
+        
+        
+        
+        
+       
     }
     
     
@@ -256,6 +533,8 @@ extension TrackDelivery: CLLocationManagerDelegate {
         let location: CLLocation = locations.last!
         print("Location: \(location)")
         mylocation=locations[0]
+        
+        
         let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude,
                                               longitude: location.coordinate.longitude,
                                               zoom: zoomLevel)
@@ -267,7 +546,7 @@ extension TrackDelivery: CLLocationManagerDelegate {
             // mapView.animate(to: camera)
         }
         //        AddAllResturanteMarker(allmarks: [CLLocationCoordinate2D(latitude:32.283475 , longitude: 30.616554)], locationid: 1)
-        
+     //   locationmaanager.stopUpdatingLocation()
         
     }
     
@@ -351,17 +630,17 @@ extension TrackDelivery: CLLocationManagerDelegate {
     
     
     
-    func AddAllDeliveryGuyMarker( allmarks : [CLLocationCoordinate2D] , locationid :Int){
-        for markcoordinate in  allmarks {
-            let marker = GMSMarker(position: markcoordinate )
-            marker.userData=["index": locationid , "type":foodcarmapmarker]
-            marker.icon = resizeImage(image: #imageLiteral(resourceName: "delivery_green_partner").tint(with: #colorLiteral(red: 0.1180874184, green: 0.1529679894, blue: 0.2294566929, alpha: 1))!, targetSize: CGSize(width:50, height: 50))
-            marker.tracksViewChanges = true
-            marker.map = mapView
-            deliveryMarkers.append(marker)
-            
-        }
-    }
+//    func AddAllDeliveryGuyMarker( allmarks : [CLLocationCoordinate2D] , locationid :Int){
+//        for markcoordinate in  allmarks {
+//            let marker = GMSMarker(position: markcoordinate )
+//            marker.userData=["index": locationid , "type":foodcarmapmarker]
+//            marker.icon = resizeImage(image: #imageLiteral(resourceName: "delivery_green_partner").tint(with: #colorLiteral(red: 0.1180874184, green: 0.1529679894, blue: 0.2294566929, alpha: 1))!, targetSize: CGSize(width:50, height: 50))
+//            marker.tracksViewChanges = true
+//            marker.map = mapView
+//            deliveryMarkers.append(marker)
+//
+//        }
+//    }
     
     
     
@@ -410,8 +689,8 @@ extension TrackDelivery: CLLocationManagerDelegate {
             bounds = bounds.includingCoordinate(marker.position)
         }
         mapView.animate(with: GMSCameraUpdate.fit(bounds, withPadding: 110.0))
-        
-        
+
+
     }
     
     
@@ -430,12 +709,13 @@ extension TrackDelivery :  GMSMapViewDelegate
     
     func drawPath(startLocation: CLLocation, endLocation: CLLocation)
     {
-        
+        mapView.clear()
+        self.first = true
         let origin = "\(startLocation.coordinate.latitude),\(startLocation.coordinate.longitude)"
-        let destination = "\(endLocation.coordinate.latitude),\(endLocation.coordinate.longitude)"
+        let destination = "\(endLocation.coordinate.longitude),\(endLocation.coordinate.latitude)"
         
         
-        let url = "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\(destination)&mode=driving"
+        let url = "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\(destination)&mode=DRIVING&key=\(Google_Location_key)"
         
         Alamofire.request(url).responseJSON { response in
             
@@ -459,7 +739,12 @@ extension TrackDelivery :  GMSMapViewDelegate
                     polyline.strokeColor = #colorLiteral(red: 0.3475901783, green: 0.7251545787, blue: 0.8235487342, alpha: 1)
                     polyline.map = self.mapView
                     self.polylines.append(polyline)
-                }
+                 }
+                self.deliveryMarker = GMSMarker(position: self.coordinate)
+                // self.deliveryMarker.appearAnimation = .pop
+                self.deliveryMarker.icon = self.resizeImage(image: #imageLiteral(resourceName: "xxxhdpi"), targetSize: CGSize(width:50, height: 50))
+                self.deliveryMarker.tracksViewChanges = true
+                self.deliveryMarker.map = self.mapView
             }
             catch let error as NSError {
                 
@@ -467,6 +752,64 @@ extension TrackDelivery :  GMSMapViewDelegate
             
         }
     }
+    
+    
+    
+    
+    func drawPath2(startLocation: CLLocation, endLocation: CLLocation)
+    {
+        self.first = true
+        mapView.clear()
+        AddHomeorDeliveryplaceMarker(allmarks: [CLLocationCoordinate2D(latitude:Double(orderItem.toLocation[1]) , longitude: Double(orderItem.toLocation[0]))], locationid: -2)
+        
+        let origin = "\(startLocation.coordinate.latitude),\(startLocation.coordinate.longitude)"
+        let destination = "\(endLocation.coordinate.latitude),\(endLocation.coordinate.longitude)"
+        
+        
+        let url = "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\(destination)&mode=DRIVING&key=\(Google_Location_key)"
+        
+        Alamofire.request(url).responseJSON { response in
+            
+            print(response.request as Any)  // original URL request
+            print(response.response as Any) // HTTP URL response
+            print(response.data as Any)     // server data
+            print(response.result as Any)   // result of response serialization
+            do {
+              let json = try  JSON(data: response.data!)
+                let routes = json["routes"].arrayValue
+                
+                self.first = false
+                // print route using Polyline
+                for route in routes
+                {
+                    self.first = true
+                    
+                    var routeOverviewPolyline = route["overview_polyline"].dictionary
+                    let points = routeOverviewPolyline?["points"]?.stringValue
+                    let path = GMSPath.init(fromEncodedPath: points!)
+                    let polyline = GMSPolyline.init(path: path)
+                    polyline.strokeWidth = 2.5
+                    polyline.strokeColor = #colorLiteral(red: 0.3475901783, green: 0.7251545787, blue: 0.8235487342, alpha: 1)
+                    polyline.map = self.mapView
+                    self.polylines.append(polyline)
+                    routeOverviewPolyline?.removeAll()
+                    
+                }
+                self.deliveryMarker = GMSMarker(position: self.coordinate)
+                 self.deliveryMarker.appearAnimation = .pop
+                self.deliveryMarker.icon = self.resizeImage(image: #imageLiteral(resourceName: "xxxhdpi"), targetSize: CGSize(width:50, height: 50))
+                self.deliveryMarker.tracksViewChanges = true
+                self.deliveryMarker.map = self.mapView
+                self.showmark.append(self.coordinate)
+                self.showAllMarkers(marke: self.showmark)
+            }
+            catch let error as NSError {
+                
+            }
+            
+        }
+    }
+    
     
     
     
@@ -623,6 +966,16 @@ extension TrackDelivery :  GMSMapViewDelegate
 //
     
     
+    
+    
+}
+
+
+extension TrackDelivery : RateSend {
+    func SendRate() {
+      customViewDelivery.BtnDeliverd.isHidden = true
+        
+    }
     
     
 }

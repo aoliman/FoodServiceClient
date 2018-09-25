@@ -17,7 +17,7 @@ class PartyCookerProduct: UIViewController {
     var type = 0
     var userId = 3
     
-    var CoastForPerson=0
+    var CoastForPerson:Float=0.0
     var limit = 10
     var page = 1
     var pageCount = 2
@@ -56,7 +56,7 @@ class PartyCookerProduct: UIViewController {
     
     @IBAction func NextBtnAction(_ sender: Any) {
         if ChooseItems == []{
-       UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please choose Item")
+       UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Please choose Item".localize())
         }else{
             if(CatogaryType  == "home-cookers" || CatogaryType  == "food-cars" || CatogaryType  == "restaurant-owners"){
                 var Items :[getproductdata] = []
@@ -115,15 +115,15 @@ extension PartyCookerProduct :UICollectionViewDelegate , UICollectionViewDataSou
         case 0.5 ... 1 :
             
             cell.RateImage.image = #imageLiteral(resourceName: "very_angry_face-2")
-        case 1.1 ... 2.0 :
+        case 1.6 ... 2.5 :
             cell.RateImage.image = #imageLiteral(resourceName: "angry_face")
-        case 2.1 ... 3.0:
+        case 2.6 ... 3.5:
             cell.RateImage.image = #imageLiteral(resourceName: "notbad_face")
      
-        case 3.1 ... 4.0 :
+        case 3.6 ... 4.5 :
             cell.RateImage.image = #imageLiteral(resourceName: "happy_face")
             
-        case 4.1 ... 5.0:
+        case 4.6 ... 5.5:
             cell.RateImage.image = #imageLiteral(resourceName: "Emoji (1)")
             
             
@@ -154,7 +154,7 @@ extension PartyCookerProduct :UICollectionViewDelegate , UICollectionViewDataSou
             if ((scrollView.contentOffset.y + scrollView.frame.size.height)-10 >= scrollView.contentSize.height)
             {
                 if !isNewDataLoading{
-                    
+                    CancelAllrequsst()
                     
                     LoadProductOfSpeceficPartyCooker(page: page, limit: limit, userId: UserDefaults.standard.integer(forKey: PartyCookerId), type: CatogaryType)
                     
@@ -246,7 +246,7 @@ extension PartyCookerProduct : Checkitem {
             for id in ChooseItems{
                 for item in listofproducte{
                     if item.id == id {
-                     CoastForPerson=CoastForPerson+item.price+item.serviceFees
+                     CoastForPerson=Float(CoastForPerson)+Float(item.price)+Float(item.serviceFees)
                         print("price = \(CoastForPerson)")
                         
                     }

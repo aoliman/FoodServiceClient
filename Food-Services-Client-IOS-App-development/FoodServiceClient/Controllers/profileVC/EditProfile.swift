@@ -9,14 +9,16 @@
 import UIKit
 import Alamofire
 import AlamofireImage
-protocol Reloadtableviewdeleget {
-    func ReloadData()
-}
+
+
+
+
+
 class EditProfile: UIViewController {
 
     
     @IBOutlet weak var MyTableView: UITableView!
-    var deleget:Reloadtableviewdeleget?
+    
     /////image controller
     var controller = UIImagePickerController()
     var tapGestureRecognizer = UITapGestureRecognizer()
@@ -27,18 +29,27 @@ class EditProfile: UIViewController {
     lazy var repo = UserRepository()
     var newpassword : String?
     var currentpassword : String?
+    var delegate:ReloadSideMenuDelegate?
     override func viewDidLoad() {
         super.viewDidLoad()
         SetupView()
+       
+        
         
       
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
     }
 
     func SetupView(){
         setupNavigationBar()
         self.title = "Edite Profile".localized()
         self.navigationController?.navigationBar.tintColor = .white
-        self.navigationItem.backBarButtonItem?.title = "Back".localized()
+//        self.navigationItem.backBarButtonItem?.title = "Back".localized()
         MyTableView.delegate=self
         MyTableView.dataSource=self
         
@@ -49,6 +60,7 @@ class EditProfile: UIViewController {
         tapGestureRecognizerPassword = UITapGestureRecognizer(target: self, action: #selector(BtnEditPassword))
         controller.delegate=self
         controller.sourceType = .photoLibrary
+        hideKeyboardWhenTappedAround()
      }
   
     @objc func BtnDoneAction() {
@@ -172,6 +184,8 @@ extension EditProfile: UIImagePickerControllerDelegate ,UINavigationControllerDe
         
        // print(selectedimage)
         cell.ProfileImage.image?=selectedimage.circle
+//        cell.ProfileImage.layer.cornerRadius = cell.ProfileImage.layer.frame.height
+//         cell.ProfileImage.layoutIfNeeded()
         
        
         picker.dismiss(animated: true, completion: nil)
@@ -190,10 +204,10 @@ extension EditProfile: UIImagePickerControllerDelegate ,UINavigationControllerDe
                 case StatusCode.complete.rawValue:
                     self?.EditEnd(user: user)
               
-                    
-                    
-                case StatusCode.success.rawValue:  self?.EditEnd(user: user)
-                 
+                    self?.delegate?.reloadTableView(true)
+                case StatusCode.success.rawValue:
+                    self?.EditEnd(user: user)
+                self?.delegate?.reloadTableView(true)
                     
                 default: break
                    
@@ -214,13 +228,17 @@ extension EditProfile: UIImagePickerControllerDelegate ,UINavigationControllerDe
     }
     func EditEnd(user : EditProfileResponse){
         
-        Singeleton.userDefaults.set(self.newpassword!  , forKey:defaultsKey.userPassword.rawValue)
-        Singeleton.userDefaults.set(user.token, forKey: defaultsKey.token.rawValue)
-        Singeleton.userDefaults.set(user.user.id, forKey: defaultsKey.userId.rawValue)
-        Singeleton.userDefaults.set(user.user.toJSON(), forKey: defaultsKey.userData.rawValue)
-        Singeleton.userDefaults.set(user.user.name, forKey: defaultsKey.userName.rawValue)
-        Singeleton.userDefaults.set(user.user.phone, forKey: defaultsKey.userPhone.rawValue)
-        Singeleton.userDefaults.set(user.user.email, forKey: defaultsKey.userEmail.rawValue)
+    
+        
+      
+        
+        
+        
+        
+        
+      
+        saveUserId(Userid:(Singeleton.userInfo?.id)!)
+        saveUserAuthKey(Userauthkey:Singeleton.token)
         
         UserDefaults.standard.removeObject(forKey: "NewPassword")
         UserDefaults.standard.removeObject(forKey: "CurrentPassword")
@@ -228,41 +246,76 @@ extension EditProfile: UIImagePickerControllerDelegate ,UINavigationControllerDe
         // upload image
         let  uploadimage = UIImageJPEGRepresentation((cellinfo?.ProfileImage.image!)!, 1)
         prfileres.UpdateProfileImage(id:(Singeleton.userInfo?.id)! , image:uploadimage! ) { (client) in
-                    Singeleton.userDefaults.set(client.toJSON(), forKey: defaultsKey.userData.rawValue)
-            let  cellmap : ProfileMapCell = self.MyTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as! ProfileMapCell
-            if( cellmap.arrayCoordinates.count != 0 ){
-                
-                self.Editlocation(lat:cellmap.arrayCoordinates[0].latitude, lan: cellmap.arrayCoordinates[0].longitude )
-                
-            }else{
-                 Loader.hideLoader()
+            
+            
+           print(client)
+            
+            if client.email==nil {}else{
+                Singeleton.userDefaults.set(true, forKey: defaultsKey.isLogged.rawValue)
+                Singeleton.userDefaults.set(self.newpassword!  , forKey:defaultsKey.userPassword.rawValue)
+                // Singeleton.userDefaults.set(user.token, forKey: defaultsKey.token.rawValue)
+                Singeleton.userDefaults.set(client.id, forKey: defaultsKey.userId.rawValue)
+                Singeleton.userDefaults.set(client.toJSON(), forKey: defaultsKey.userData.rawValue)
+                Singeleton.userDefaults.set(client.name, forKey: defaultsKey.userName.rawValue)
+                Singeleton.userDefaults.set(client.phone, forKey: defaultsKey.userPhone.rawValue)
+                Singeleton.userDefaults.set(client.email, forKey: defaultsKey.userEmail.rawValue)
+                Singeleton.userDefaults.set(client.toJSON(), forKey: defaultsKey.userData.rawValue)
+               
                 Singeleton.userDefaults.synchronize()
-                self.deleget?.ReloadData()
-                self.motionDismissViewController()
+                
+                Singeleton.userDefaults.set(client.toJSON(), forKey: defaultsKey.userData.rawValue)
+               
+                 Singeleton.userDefaults.synchronize()
+                 self.delegate?.reloadTableView(true)
+                  print(Singeleton.userInfo?.toJSON())
+                
+                
+                let  cellmap : ProfileMapCell = self.MyTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as! ProfileMapCell
+                if( cellmap.arrayCoordinates.count != 0 ){
+                    
+                    self.Editlocation(lat:cellmap.arrayCoordinates[0].latitude, lan: cellmap.arrayCoordinates[0].longitude )
+                  
+                }else{
+              //      Loader.hideLoader()
+                    Singeleton.userDefaults.synchronize()
+                    
+                    self.motionDismissViewController()
+                    self.delegate?.reloadTableView(true)
+                }
+                Singeleton.userDefaults.synchronize()
+                
+                
+                self.delegate?.reloadTableView(true)
+                
             }
+            
+           
          
                     }
         
     }
+    
+    
+    
     func Editlocation(lat : Double , lan : Double ){
        
         
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
-      repo.determineLocation(id: Singeleton.userId!, lat: lat, lan: lan, onSuccess: { (response, statusCode) in
+      repo.determineLocation(id: (Singeleton.userInfo?.id)!, lat: lat, lan: lan, onSuccess: { (response, statusCode) in
         Singeleton.userDefaults.set(response?.user.toJSON(), forKey: defaultsKey.userData.rawValue)
-    
+    print(Singeleton.userInfo?.toJSON())
                     Loader.hideLoader()
                     Singeleton.userDefaults.synchronize()
-                    self.deleget?.ReloadData()
+        
                     self.motionDismissViewController()
-                    
+                    self.delegate?.reloadTableView(true)
                     
                 }, onFailure: { (errorResponse, statusCode) in
                     
                     Loader.hideLoader()
                     UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                    let errorMessage = errorResponse?.error[0].msg
-                    DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorMessage!)
+                   // let errorMessage = errorResponse?.error[0].msg
+                    DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorResponse!)
                     
                 })
                 

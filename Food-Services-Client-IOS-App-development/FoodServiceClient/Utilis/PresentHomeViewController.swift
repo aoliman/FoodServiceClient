@@ -8,37 +8,45 @@
 
 import UIKit
 import Localize_Swift
-func PresentHomeViewController(ViewController:UIViewController){
+func PresentHomeViewController(myViewController:UIViewController){
    var nvc = UINavigationController()
     
     
-    UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Order Has Send".localize())
+    myViewController.popoverPresentationController
+    myViewController.dismiss(animated: true, completion: nil)
+    
+    
+//    AppDelegate.instance.changeIntialViewController()
+    myViewController.navigationController?.popToRootViewController(animated: true)
     
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
         
         
+//        UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Order Has Send".localize())
         
-        let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-        let homeController :HomeVC = storyboard.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
         
-      
-        let sideMenuViewController = SideMenuViewController()
-        let appToolbarController = AppToolbarController(rootViewController: homeController)
-        appToolbarController.mytitle="Home".localize()
-        if Localize.currentLanguage() == "en" {
-            let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, leftViewController: sideMenuViewController)
-            viewController.isHiddenStatusBarEnabled = false
-            nvc = UINavigationController(rootViewController: viewController)
-            UIApplication.shared.keyWindow?.rootViewController?.present(nvc, animated: true, completion: nil)
-            
-            
-        }
-        else {
-            let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, rightViewController: sideMenuViewController)
-            viewController.isHiddenStatusBarEnabled = false
-            nvc = UINavigationController(rootViewController: viewController)
-            UIApplication.shared.keyWindow?.rootViewController?.present(nvc, animated: true, completion: nil)
-        }
+        
+//        let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+//        let homeController :HomeVC = storyboard.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
+//
+//
+//        let sideMenuViewController =  SideMenuViewController()
+//        let appToolbarController = AppToolbarController(rootViewController: homeController)
+//        appToolbarController.mytitle="Home".localize()
+//        if Localize.currentLanguage() == "en" {
+//            let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, leftViewController: sideMenuViewController)
+//            viewController.isHiddenStatusBarEnabled = false
+//            nvc = UINavigationController(rootViewController: viewController)
+//            UIApplication.shared.keyWindow?.rootViewController?.present(nvc, animated: true, completion: nil)
+//
+//
+//        }
+//        else {
+//            let viewController = AppNavigationDrawerController(rootViewController: appToolbarController, rightViewController: sideMenuViewController)
+//            viewController.isHiddenStatusBarEnabled = false
+//            nvc = UINavigationController(rootViewController: viewController)
+//            UIApplication.shared.keyWindow?.rootViewController?.present(nvc, animated: true, completion: nil)
+//        }
         
         
         

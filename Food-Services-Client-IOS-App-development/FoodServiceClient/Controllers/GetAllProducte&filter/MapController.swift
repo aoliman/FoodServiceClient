@@ -41,7 +41,7 @@ class MapController: UIViewController  {
     var NewResResturant:[DataCatogary] = []
     var  NewResFoodCar: [DataCatogary] = []
     var ResResturant:[DataCatogary] = []
-    var  raduis=10000
+    
     let foodcarmapmarker = 1
     let resturantmapmarker = 2
     
@@ -62,14 +62,14 @@ class MapController: UIViewController  {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        mylocation = locationmaanager.location!
+       
+       
         self.navigationController?.navigationBar.tintColor = .white
         setupNavigationBar()
-        self.navigationItem.backBarButtonItem?.title = "Back".localized()
-        
+//        self.navigationItem.backBarButtonItem?.title = "Back".localized()
+        self.title = "Map".localize()
        //firebase ref
-       mygeoFire = GeoFire(firebaseRef: self.FoodCar_Ref)
+        mygeoFire = GeoFire(firebaseRef: self.FoodCar_Ref)
         
         //configurelocation manger
         locationmaanager = CLLocationManager()
@@ -77,6 +77,7 @@ class MapController: UIViewController  {
         locationmaanager.requestAlwaysAuthorization()
         locationmaanager.distanceFilter = 50
         locationmaanager.startUpdatingLocation()
+        //locationmaanager.requestLocation()
         locationmaanager.delegate = self
         
         //create google map
@@ -112,17 +113,24 @@ class MapController: UIViewController  {
         
         
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
     
     
-    override func viewDidAppear(_ animated: Bool) {
-       
-     }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.customView.ImageProfile.layer.cornerRadius = self.customView.ImageProfile.layer.frame.height/2
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
       timer.invalidate()
     }
     @objc func AppearMapView(urlimage:String , name:String , rate:Double , type :String){
         UIView.animate(withDuration: 1, delay: 0.0, options: UIViewAnimationOptions.curveLinear, animations: {
+            
             if  urlimage != nil {
                 self.customView.ImageProfile.af_setImage(withURL: URL(string:urlimage)!)
                 self.customView.ImageProfile.layer.cornerRadius = self.customView.ImageProfile.layer.frame.height/2
@@ -135,10 +143,14 @@ class MapController: UIViewController  {
             self.customView.RateView.rating = rate
             self.customView.TyptLabel.text = type
             self.customView.RateView.text = String(rate)
+             self.customView.RateView.settings.updateOnTouch = false
             self.customView.BtnREquest.setTitle("Next".localize(), for: .normal)
+            self.customView.BtnREquest.layer.cornerRadius = 6
             if(type == "Food Car".localize()){
+                 self.customView.BtnREquest.removeTarget(nil, action: nil, for: .allEvents)
                 self.customView.BtnREquest.addTarget(self, action: #selector(self.BtnNextActionFoodCar(sender:)), for: .touchUpInside)
             }else{
+                self.customView.BtnREquest.removeTarget(nil, action: nil, for: .allEvents)
                 self.customView.BtnREquest.addTarget(self, action: #selector(self.BtnNextActionResturante(sender:) ), for: .touchUpInside)
             }
             
@@ -421,7 +433,7 @@ extension MapController :  GMSMapViewDelegate
     
     @objc func GetAllRestutante(){
         
-        Getallproducterepo.GetCatogary(page: 1, limit: 40, type: "restaurant-owners", lat: mylocation.coordinate.latitude, long: mylocation.coordinate.longitude, radius: raduis) { (catogary) in
+        Getallproducterepo.GetCatogary(page: 1, limit: 10, type: "restaurant-owners", lat: mylocation.coordinate.latitude, long: mylocation.coordinate.longitude, radius: raduis) { (catogary) in
             self.NewResResturant = []
             for onedata in catogary.data  {
                 self.NewResResturant.append(onedata)

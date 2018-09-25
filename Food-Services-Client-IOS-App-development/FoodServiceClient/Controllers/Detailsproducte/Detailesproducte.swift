@@ -37,11 +37,16 @@ class Detailesproducte: UIViewController {
          setup()
         // Do any additional setup after loading the view.
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
 
    func setup(){
     self.navigationController?.navigationBar.tintColor = .white
     setupNavigationBar()
-    self.navigationItem.backBarButtonItem?.title = "Back".localized()
+//    self.navigationItem.backBarButtonItem?.title = "Back".localized()
     
     if let name = datadetailes.name {
         self.title = name

@@ -166,17 +166,23 @@ class Validator {
         
         return variable.asObservable()
     }
+    
+    
     private func minimumNumberOfCharacters() -> Observable<Bool> {
         let variable = Variable<Bool>(false)
         //        self.textField?.keyboardType = .emailAddress
         self.textField?.rx.controlEvent([.editingChanged])
             .asDriver()
             .drive(onNext: {
-                if String(describing: self.textField?.text!).characters.count < 14 { // 12 is empty
+                if String(describing: self.textField?.text!).characters.count > 16 { // 12 is empty
+                    
+                    print(String(describing: self.textField?.text!).characters.count)
+                    self.errorMessage = "minNumberOfCharactersError1".localized()
+                    variable.value = true
+                } else {
                     self.errorMessage = "minNumberOfCharactersError".localized()
                     variable.value = false
-                } else {
-                    variable.value = true
+                    
                 }
             })
             .disposed(by: self.disposeBag)
@@ -207,11 +213,14 @@ class Validator {
         self.textField?.rx.controlEvent([.editingChanged])
             .asDriver()
             .drive(onNext: {
-                if String(describing: self.textField?.text!).characters.count < 18 { // 12 is empty
+                print(String(describing: self.textField?.text!).count)
+                if String(describing: self.textField?.text!).count > 17 { // 12 is empty
+                    variable.value = true
+                } else {
                     self.errorMessage = "passwordError".localized()
                     variable.value = false
-                } else {
-                    variable.value = true
+                   //  variable.value = true
+                    
                 }
             })
             .disposed(by: self.disposeBag)

@@ -20,7 +20,7 @@ class RegisterImageVC:UIViewController {
     var didSetupConstraints = false
     
     //var delegate: ContinueRegiserDelegate?
-    
+    var prfileres = ProfileRespository()
     var photosArray = [Data]()
     lazy var userRepository = UserRepository()
     private let disposeBag = DisposeBag()
@@ -46,10 +46,10 @@ class RegisterImageVC:UIViewController {
         let label = UILabel()
         label.numberOfLines = 0
         label.textColor = UIColor.appColor()
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.font = UIFont.appFontBold(ofSize: 14)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
-        
+        label.text = "upload profile photos".localize()
         return label
     }()
     
@@ -84,7 +84,7 @@ class RegisterImageVC:UIViewController {
         button.titleLabel?.font = UIFont.appFontRegular(ofSize: 16)
         button.backgroundColor = UIColor.appColor()
         button.titleLabel?.textAlignment = .left
-        button.layer.cornerRadius = 10
+        button.layer.cornerRadius = 4
         button.setTitleColor(.white, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints  = false
         button.pulseColor = .white
@@ -119,6 +119,18 @@ class RegisterImageVC:UIViewController {
         collectionView.backgroundColor = .white
         
         openCameraButton.addTarget(self, action: #selector(popupPhotoCamera), for: .touchUpInside)
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+        self.navigationController?.navigationBar.tintColor = .white
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        continueRegisterButton.sizeToFit()
+        continueRegisterButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
         
     }
     
@@ -214,24 +226,34 @@ extension RegisterImageVC {
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
 
         if photosArray.count > 0 {
-            userRepository.uploadProfileImage(id: Singeleton.userId!, images: photosArray, onSuccess: { (response, statusCode) in
+            let  uploadimage = photosArray[0]
+            prfileres.UpdateProfileImage(id:(Singeleton.userInfo?.id)! , image:uploadimage ) { (client) in
                 
-                Loader.hideLoader()
-                UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                Singeleton.userDefaults.set(response?.token, forKey: defaultsKey.token.rawValue)
-                Singeleton.userDefaults.set(response?.user.id, forKey: defaultsKey.userId.rawValue)
-        
+                print(client)
                 let vc = DetermineLocationVc ()
-                self.navigationController?.pushViewController(vc, animated: true)
-                
-            }, onFailure: { (errorResponse, statusCode) in
-                
+                self.present(vc, animated: true, completion: nil)
+                //self.navigationController?.pushViewController(vc, animated: true)
                 Loader.hideLoader()
-                UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                if let errorMessage = errorResponse?.error[0].msg{
-                    DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorMessage)}
-
-            })
+            }
+            
+//            userRepository.uploadProfileImage(id: Singeleton.userId!, images: photosArray, onSuccess: { (response, statusCode) in
+//
+//                Loader.hideLoader()
+//                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+//                Singeleton.userDefaults.set(response?.token, forKey: defaultsKey.token.rawValue)
+//                Singeleton.userDefaults.set(response?.user.id, forKey: defaultsKey.userId.rawValue)
+//
+//                let vc = DetermineLocationVc ()
+//                self.navigationController?.pushViewController(vc, animated: true)
+//
+//            }, onFailure: { (errorResponse, statusCode) in
+//
+//                Loader.hideLoader()
+//                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+//                if let errorMessage = errorResponse?.error[0].msg{
+//                    DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorMessage)}
+//
+//            })
             
         } else {
             

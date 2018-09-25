@@ -30,7 +30,7 @@ class CallUsVC: UIViewController {
         label.textColor = UIColor.deliveredColor().withAlphaComponent(0.5)
         label.textAlignment = .center
         label.sizeToFit()
-        label.text = "+123-3555-55"
+        label.text = "+966564486115"
         label.contentMode = .scaleToFill
 
         return label
@@ -53,6 +53,13 @@ class CallUsVC: UIViewController {
         addSubView()
         callButton.addTarget(self, action: #selector(makePhoneCall), for: .touchUpInside)
     }
+    
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        setupNavigationBar()
+//        self.navigationController?.navigationBar.tintColor = .white
+//    }
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

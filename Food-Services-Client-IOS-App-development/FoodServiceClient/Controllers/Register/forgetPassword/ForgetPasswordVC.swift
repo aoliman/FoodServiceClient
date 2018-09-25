@@ -116,8 +116,8 @@ extension ForgetPasswordVC
             }, onFailure: { (error, statusCode) in
                 Loader.hideLoader()
                 UIApplication.shared.isNetworkActivityIndicatorVisible = true
-                let errorMessage = error?.error[0].msg
-                DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: errorMessage!)
+                //let errorMessage = error?.error[0].msg
+                DataUtlis.data.WarningDialog(Title: "Error".localized(), Body: error!)
             })
             
         } else {

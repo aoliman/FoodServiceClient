@@ -16,17 +16,40 @@ class PopUpMenuPassword: UIViewController {
     @IBOutlet weak var ConfiremPassword: ErrorTextField!
     @IBOutlet weak var BackView: UIView!
     @IBOutlet weak var MenuView: UIView!
-    
+    var IsKEYboardOpen = false
     override func viewDidLoad() {
         super.viewDidLoad()
          SetupView()
+        hideKeyboardWhenTappedAround()
  BackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTappedOnBackgroundView)))
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillDisappear), name: Notification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: Notification.Name.UIKeyboardWillShow, object: nil)
+        
+        MenuView.layer.cornerRadius = 16
+        
+        MenuView.layer.shadowColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+        MenuView.layer.shadowOffset = CGSize(width: 0, height: 1.75)
+        MenuView.layer.shadowRadius = 1.7
+        MenuView.layer.shadowOpacity = 0.45
        
-        // Do any additional setup after loading the view.
+        
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         SetupView()
+    }
+    @objc func keyboardWillAppear() {
+        //Do something here
+        IsKEYboardOpen = true
+    }
+    
+    @objc func keyboardWillDisappear() {
+        //Do something here
+        IsKEYboardOpen = false
     }
     
     
@@ -42,7 +65,7 @@ UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Enter Confir
         }else if(Oldpassword.text != Singeleton.userPassword ){
             Oldpassword.dividerColor=#colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1)
             Oldpassword.dividerActiveColor=#colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1)
-            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("çurrent  Password is Incorrect".localized())
+            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Current  Password is Incorrect".localized())
         }
         else{
             UserDefaults.standard.set(NewPassword.text, forKey: "NewPassword")
@@ -72,34 +95,17 @@ UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Enter Confir
         }
         
         
-        MenuView.layer.cornerRadius = 70
+        
         
         
         
         Btnok.setTitle("Done".localized(), for: .normal )
         Btnok.layer.cornerRadius = 10
-        MenuView.cornerRadiusPreset = CornerRadiusPreset(rawValue: 8)!
-        MenuView.layer.cornerRadius = 16
-        MenuView.layer.shadowColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-        MenuView.layer.shadowOpacity = 1
-        MenuView.layer.shadowOffset = CGSize(width: 20, height: 20)
-        MenuView.layer.shadowRadius = 5
-        MenuView.layer.shadowPath = UIBezierPath(rect: MenuView.bounds).cgPath
-        MenuView.layer.shouldRasterize = true
-        MenuView.layer.shadowOffset = CGSize(width: 10.0, height: 10.0)
+     //   MenuView.cornerRadiusPreset = CornerRadiusPreset(rawValue: 8)!
         
-        //add shadow for view
-        var  shadowLayer = CAShapeLayer()
-        shadowLayer.path = UIBezierPath(roundedRect: MenuView.bounds, cornerRadius: 10).cgPath
-        shadowLayer.fillColor = UIColor.white.cgColor
+       
         
-        shadowLayer.shadowColor = UIColor.darkGray.cgColor
-        shadowLayer.shadowPath = shadowLayer.path
-        shadowLayer.shadowOffset = CGSize(width: 2.0, height: 2.0)
-        shadowLayer.shadowOpacity = 0.5
-        shadowLayer.shadowRadius = 2
         
-        MenuView.layer.insertSublayer(shadowLayer, at: 0)
         
         /////
         Oldpassword.isSecureTextEntry = true
@@ -109,6 +115,13 @@ UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Enter Confir
         SetupTextField(fieldtext: ConfiremPassword, placeholder: "Confirm Password".localize(), errortext: "".localize())
         SetupTextField(fieldtext: Oldpassword, placeholder: "Old Password".localize(), errortext: " ".localize())
         SetupTextField(fieldtext: NewPassword, placeholder: "New Password".localize(), errortext: " ".localize())
+        
+        
+        
+        
+       
+        
+
     }
     
     func SetupTextField(fieldtext : ErrorTextField ,placeholder :String , errortext :String){
@@ -131,7 +144,12 @@ UIApplication.shared.keyWindow?.rootViewController?.view.makeToast("Enter Confir
         
     }
     @objc func didTappedOnBackgroundView(){
-        dismiss(animated: true)
+        if IsKEYboardOpen == false{
+          dismiss(animated: true)
+        }else{
+            self.view.endEditing(true)
+        }
+        
     }
 
    

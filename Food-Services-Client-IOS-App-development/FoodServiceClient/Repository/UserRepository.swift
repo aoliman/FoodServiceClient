@@ -4,7 +4,7 @@ import Moya
 import Gloss
 import Moya_Gloss
 import Foundation
-
+import SwiftyJSON
 
     
 class UserRepository: BaseRepository {
@@ -81,6 +81,7 @@ class UserRepository: BaseRepository {
                     default:
                         let errorResponseApi =  try response.mapObject(ErrorResponse.self)
                         onFailure(errorResponseApi, response.statusCode)
+                        myLoader.hideCustomLoader()
                     }
                 } catch {
                        onFailure(nil, 404)
@@ -94,7 +95,7 @@ class UserRepository: BaseRepository {
     
     
     
-    public func verifyCode(id: Int,verify_code: String , onSuccess: @escaping successHandler ,onFailure: @escaping failureHandler  )
+    public func verifyCode(id: Int,verify_code: String , onSuccess: @escaping successHandler ,onFailure: @escaping (String?,Int) -> Void  )
     {
         
         addTokenHeaderToProvider()
@@ -102,7 +103,11 @@ class UserRepository: BaseRepository {
         {
             
             result in
+            do{
+                print(try result.value?.mapJSON())}catch{}
+            print(result.value?.statusCode)
             switch result {
+                
             case .success(let response):
                 
                 do {
@@ -117,15 +122,29 @@ class UserRepository: BaseRepository {
                         onSuccess(loginResponseApi, response.statusCode)
 
                     default:
-                        let errorResponseApi =  try response.mapObject(ErrorResponse.self)
-                        onFailure(errorResponseApi, response.statusCode)
+                        do {
+                            let errorResponseApi =  try response.mapJSON() as! NSDictionary
+                            onFailure(String(describing: errorResponseApi["error"]!), response.statusCode)
+                        }catch{}
+                        
+                        
                     }
                 } catch {
-                    onFailure(nil, 404)
+                    do {
+                        let errorResponseApi =  try response.mapJSON() as! NSDictionary
+                        onFailure(String(describing: errorResponseApi["error"]), response.statusCode)
+                    }catch{}
+                  //  onFailure(nil, 404)
                 }
                 
-            case .failure(_):
-                onFailure(nil, 404)
+            case .failure(let response):
+//                do {
+//                    let errorResponseApi =  try response.mapJSON() as! NSDictionary
+//                    onFailure(String(describing: errorResponseApi["error"]), response.statusCode)
+//                }catch{}
+                  onFailure(nil, 404)
+           // }
+              //  onFailure(nil, 404)
             }
         }
     }
@@ -140,6 +159,10 @@ class UserRepository: BaseRepository {
         {
             
             result in
+            
+            print(result.value?.statusCode)
+            do{ print(try result.value?.mapJSON())}catch{}
+            
             switch result {
             case .success(let response):
                 
@@ -157,6 +180,7 @@ class UserRepository: BaseRepository {
                     default:
                         let errorResponseApi =  try response.mapObject(ErrorResponse.self)
                         onFailure(errorResponseApi, response.statusCode)
+                        myLoader.hideCustomLoader()
                     }
                 } catch {
                     
@@ -171,7 +195,7 @@ class UserRepository: BaseRepository {
     
     
     
-    public func determineLocation(id: Int,lat: Double, lan: Double, onSuccess: @escaping successHandler ,onFailure: @escaping failureHandler  )
+    public func determineLocation(id: Int,lat: Double, lan: Double, onSuccess: @escaping successHandler ,onFailure: @escaping (String?,Int) -> Void  )
     {
         
         addTokenHeaderToProvider()
@@ -194,12 +218,17 @@ class UserRepository: BaseRepository {
                         onSuccess(loginResponseApi, response.statusCode)
                         
                     default:
-                        let errorResponseApi =  try response.mapObject(ErrorResponse.self)
-                        onFailure(errorResponseApi, response.statusCode)
+                        do {
+                            let errorResponseApi =  try response.mapJSON() as! NSDictionary
+                            onFailure(String(describing: errorResponseApi["error"]!), response.statusCode)
+                        }catch{}
                     }
                 } catch {
+                    do {
+                        let errorResponseApi =  try response.mapJSON() as! NSDictionary
+                        onFailure(String(describing: errorResponseApi["error"]!), response.statusCode)
+                    }catch{}
                     
-                    onFailure(nil, 404)
                 }
                 
             case .failure(_):
@@ -234,6 +263,7 @@ class UserRepository: BaseRepository {
                     default:
                         let errorResponseApi =  try response.mapObject(ErrorResponse.self)
                         onFailure(errorResponseApi, response.statusCode)
+                        myLoader.hideCustomLoader()
                     }
                 } catch {
                     
@@ -248,13 +278,22 @@ class UserRepository: BaseRepository {
     
     
     
-    public func forgetPassword(phone:String ,onSuccess: @escaping forgetPasswordHandler ,onFailure: @escaping failureHandler  )
+    public func forgetPassword(phone:String ,onSuccess: @escaping forgetPasswordHandler ,onFailure: @escaping (String?,Int) -> Void  )
     {
         
         provider.request(.forgetPasswordPhone(phone: phone))
         {
             
             result in
+            
+            
+            print(result.value?.statusCode)
+            do{
+                try print(result.value?.mapString())
+            }catch{
+                
+            }
+            
             switch result {
             case .success(let response):
                 
@@ -270,11 +309,15 @@ class UserRepository: BaseRepository {
                         onSuccess(response.statusCode)
                         
                     case StatusCode.undocumented.rawValue:
+                    //    let errorResponseApi =  try response.mapObject(ErrorResponse.self)
+                        
                         onSuccess(response.statusCode)
 
                     default:
-                        let errorResponseApi =  try response.mapObject(ErrorResponse.self)
-                        onFailure(errorResponseApi, response.statusCode)
+//                        let errorResponseApi =  try response.mapObject(ErrorResponse.self)
+                         let errorResponseApi =  try response.mapJSON() as! NSDictionary
+                        onFailure(String(describing: errorResponseApi["error"]!), response.statusCode)
+                        myLoader.hideCustomLoader()
                     }
                 } catch {
                     
@@ -288,13 +331,21 @@ class UserRepository: BaseRepository {
     }
     
     
-    public func VerifyCodeforgetPassword(phone:String , verify_code: String,onSuccess: @escaping forgetPasswordHandler ,onFailure: @escaping failureHandler  )
+    public func VerifyCodeforgetPassword(phone:String , verify_code: String,onSuccess: @escaping forgetPasswordHandler ,onFailure: @escaping (String?,Int) -> Void  )
     {
         
         provider.request(.verifyCodeChangfePassword(phone: phone, verify_code: verify_code))
         {
             
             result in
+            
+            print(result.value?.statusCode)
+            do{
+                try print(result.value?.mapString())
+            }catch{
+                
+            }
+            
             switch result {
             case .success(let response):
                 
@@ -306,15 +357,20 @@ class UserRepository: BaseRepository {
                         onSuccess(response.statusCode)
                         
                     case StatusCode.complete.rawValue:
-                        let loginResponseApi =  try response.mapObject(LoginResponseApi.self)
+                       // let loginResponseApi =  try response.mapObject(LoginResponseApi.self)
                         onSuccess(response.statusCode)
                         
                     case StatusCode.undocumented.rawValue:
                         onSuccess(response.statusCode)
                         
                     default:
-                        let errorResponseApi =  try response.mapObject(ErrorResponse.self)
-                        onFailure(errorResponseApi, response.statusCode)
+                        
+//                        let errorResponseApi =  try response.mapObject(ErrorResponse.self)
+//                        onFailure(errorResponseApi, response.statusCode)
+                        
+                        let errorResponseApi =  try response.mapJSON() as! NSDictionary
+                        onFailure(String(describing: errorResponseApi["error"]!), response.statusCode)
+                        myLoader.hideCustomLoader()
                     }
                 } catch {
                     
@@ -356,6 +412,7 @@ class UserRepository: BaseRepository {
                     default:
                         let errorResponseApi =  try response.mapObject(ErrorResponse.self)
                         onFailure(errorResponseApi, response.statusCode)
+                        myLoader.hideCustomLoader()
                     }
                 } catch {
                     
